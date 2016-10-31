@@ -1,6 +1,5 @@
 from app import create_app, api
 from flask_restplus import Resource
-
 # from app import create_app
 app = create_app('development')
 
@@ -12,6 +11,7 @@ class HelloWorld(Resource):
                 this is a very interesting ui
         """
         return {'hello': 'world'}
+
 
 if __name__ == '__main__':
     app.run()

@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from config import config
 
 db = SQLAlchemy()  # Initialise the db
-api_bp = Blueprint('api', __name__, url_prefix='/v1.0')
+api_bp = Blueprint('api', __name__, url_prefix='/api/v1.0')
 
 # Defining flask_restplus parameters
 version = '1.0'
@@ -13,7 +13,7 @@ description = 'BLister is a bucketlist application API'\
     ' built with Flask and Swagger UI '
 
 # Initialise the Api class
-api = Api(version=version, title=title,
+api = Api(api_bp, version=version, title=title,
           description=description)
 
 
