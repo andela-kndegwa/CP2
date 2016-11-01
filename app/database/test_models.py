@@ -1,7 +1,7 @@
 import factory  # imports the faactory boy module.
 import models
 import unittest  # Python unittesting framework
-from app.config import config
+
 
 
 class TestBlisterModelFunctionality(unittest.TestCase):
