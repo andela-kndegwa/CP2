@@ -3,30 +3,37 @@ from flask_restplus import Api
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 
-db = SQLAlchemy()
-api_blueprint = Blueprint("api", __name__, url_prefix='/v1')
-api = Api(api_blueprint,version='1.0', title='BucketlisTER',
-          description='The BucketlisTER is a bucketlist application API built with Flask.')
+db = SQLAlchemy()  # Initialise the db
+api_bp = Blueprint('api', __name__, url_prefix='/api/v1.0')
+
+# Defining flask_restplus parameters
+version = '1.0'
+title = 'BLister'
+description = 'BLister is a bucketlist application API'\
+    ' built with Flask and Swagger UI. '
+
+# Initialise the Api class
+api = Api(api_bp, version=version, title=title,
+          description=description)
+
 
 def create_app(config_name):
-	"""
-	The create_app function here is our app factory
-	that creates out application and passes only the 
-	required configuration
+    '''
+    The creat_app function functions as the application
+    factory. This means all the initialization is effected
+    here.
 
+    Arguments :
+    It takes the config dictionary from the config.py
+    and accesses the required class and its properties as
+    requried.
 
-	Argument Parameters : 
-	Within our config.py file.
-	This is where the configurations are made .i.e
-	config_name
+    Return value:
+    It finally returns the app fully created
 
-	Return value:
-	Eventually it returns our app which is fully configured.
-
-
-	"""
-	app = Flask(__name__)
-	app.config.from_object(config[config_name]) # dictionary with all the right configurations made
-	config[config_name].init_app(app)
-	db.init_app(app)
-	return app
+    '''
+    app = Flask(__name__)
+    app.config.from_object(config[config_name])
+    db.init_app(app)
+    app.register_blueprint(api_bp)
+    return app
