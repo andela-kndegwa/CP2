@@ -17,6 +17,10 @@ class Config(object):
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     DEBUG = True
+    RESTPLUS_SWAGGER_UI_DOC_EXPANSION = 'list'
+    RESTPLUS_VALIDATE = True
+    RESTPLUS_MASK_SWAGGER = False
+    RESTPLUS_ERROR_404_HELP = False
 
 
 class DevelopmentConfig(Config):
