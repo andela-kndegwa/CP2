@@ -1,11 +1,10 @@
-import sys
-sys.path.append("..")
 from app import db
 
+
 class User(db.Model):
-	"""
-	This is the bucket list user model
-	"""
+    """
+    This is the bucket list user model
+    """
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(80))
