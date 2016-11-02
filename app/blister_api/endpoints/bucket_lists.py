@@ -3,7 +3,7 @@ from app import api
 
 
 ns = api.namespace(
-    'bucket_lists', description="Options related to individual bucket lists.")
+    'blister/bucket_lists', description="Options related to individual bucket lists.")
 
 
 @ns.route('/')

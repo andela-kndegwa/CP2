@@ -30,9 +30,10 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
+    db_name = 'blister-test.sqlite'
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'blister-test.sqlite')
+        'sqlite:///' + os.path.join(basedir, db_name)
 
 
 class ProductionConfig(Config):

@@ -89,4 +89,4 @@ ENV/
 .ropeproject
 
 migrations/
-blister-dev.sqlite
+*.sqlite
