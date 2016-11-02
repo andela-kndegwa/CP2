@@ -23,8 +23,7 @@ class User(db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
-    bucket_list = relationship("BucketList", uselist=False,
-                               back_populates="user")
+    bucket_list = relationship("BucketList")
 
     @property
     def password(self):
@@ -82,6 +81,15 @@ class User(db.Model):
         user_id = data['id']
         return user_id
 
+    @staticmethod
+    def query_user(username, password):
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return 'User does not exist'
+        if not user.verify_password(password):
+            return 'Incorrect password'
+        return user
+
     def __repr__(self):
         return "<User: %r>" % self.username
 
@@ -91,6 +99,10 @@ class BucketList(db.Model):
     The Bucket List Model establishes
     a Bucket List model where items can
     be added to.
+
+    Relationship:
+    The Bucket List has a one to many relationship
+    with the User.
     """
     __tablename__ = 'bucketlists'
     id = db.Column(db.Integer, primary_key=True)
@@ -98,8 +110,16 @@ class BucketList(db.Model):
     description = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, onupdate=datetime.now)
-    created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
-    user = db.relationship("User", back_populates='bucket_list')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship("User", back_populates="bucket_list")
+
+    @staticmethod
+    def query_bucket_list(bucket_list_title):
+        bucket_list = BucketList.query.filter_by(
+            title=bucket_list_title).first()
+        if bucket_list is None:
+            return 'Bucket list does not exist'
+        return bucket_list
 
     def __repr__(self):
         return "<Bucketlist: %r>" % self.title
@@ -108,6 +128,10 @@ class BucketList(db.Model):
 class BucketListItem(db.Model):
     """
     This represents the individual bucket list items.
+
+    Relationship:
+    The Bucket List Item has a one to many relationship
+    with the Buckect List.
     """
     __tablename__ = 'bucketlist_items'
     id = db.Column(db.Integer, primary_key=True)
@@ -119,6 +143,14 @@ class BucketListItem(db.Model):
     bucketlist_id = db.Column(db.Integer, db.ForeignKey("bucketlists.id"))
     bucketlist = db.relationship('BucketList', backref=db.backref(
         'bucketlist_items', lazy='dynamic'))
+
+    @staticmethod
+    def query_item(title):
+        item = BucketListItem.query.filter_by(
+            title=title).first()
+        if item is None:
+            return 'Bucket list item does not exist'
+        return item
 
     def __repr__(self):
         return "<Bucketlist item: %r>" % self.title
