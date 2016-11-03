@@ -1,4 +1,7 @@
 from app import db
+from models import BucketListItem
+
+
 def create_bucket_list(data):
     """
     Attributes:
@@ -6,6 +9,7 @@ def create_bucket_list(data):
     Description :
 
     """
+    pass
 
 
 def update_bucket_list():
@@ -16,8 +20,23 @@ def delete_bucket_list():
     pass
 
 
-def create_bucket_list_item():
-    pass
+def create_bucket_list_item(data):
+    '''
+    data here is the JSON Object representing
+    the request sent with the URI
+
+    Attributes:
+    'title' : Title of the blister item
+    'description': Extra description for the item
+    'bucket': 'String' value highlighting the particular bucket list
+    '''
+    title = data.get('title')
+    description = data.get('description', '')
+    # bucketlist = data.get('bucketlist')
+    item = BucketListItem(title=title,
+                          description=description)
+    db.session.add(item)
+    db.session.commit()
 
 
 def update_bucket_list_item():
@@ -29,10 +48,6 @@ def delete_bucket_list_item():
 
 
 def register_user():
-    pass
-
-
-def query_user():
     pass
 
 

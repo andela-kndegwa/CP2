@@ -1,9 +1,14 @@
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager, Shell
-# application=specific imports
-from app import db
-from app.database.models import User
-from app.blister import app
+
+from app import create_app, db, api
+from app.blister_api.models import User
+from app.blister_api.endpoints.bucket_lists import ns as bucket_list_namespace
+from app.blister_api.endpoints.items import ns as items_namespace
+
+
+# create the app
+app = create_app('development')
 
 # create instances of the Manager and Migrate classes.
 manager = Manager(app)
@@ -26,4 +31,6 @@ manager.add_command('db', MigrateCommand)
 
 
 if __name__ == '__main__':
+    api.add_namespace(bucket_list_namespace)
+    api.add_namespace(items_namespace)
     manager.run()

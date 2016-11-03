@@ -1,11 +1,13 @@
 from datetime import datetime
+
+from flask import current_app
 from itsdangerous import (
     TimedJSONWebSignatureSerializer as Serializer,
     BadSignature, SignatureExpired)
-from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
-from app.blister import app
 from sqlalchemy.orm import relationship
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from app import db
 
 
 class User(db.Model):
@@ -59,7 +61,7 @@ class User(db.Model):
         Arguments:
         expiration = 1200 seconds i.e 20 Minutes
         """
-        s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({"id": self.id})
 
     @staticmethod
@@ -69,7 +71,7 @@ class User(db.Model):
         A static method is used as a user will only
         be known after the token is decoded.
         """
-        s = Serializer(app.config["SECRET_KEY"])
+        s = Serializer(current_app.config["SECRET_KEY"])
         try:
             data = s.loads(token)
         except SignatureExpired:
