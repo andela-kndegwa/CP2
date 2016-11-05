@@ -26,3 +26,12 @@ bucket_list = api.model('Bucket list', {
     'user': fields.String(attribute='users.id')
 
 })
+
+user = api.model('User', {
+    'id': fields.Integer(readOnly=True,
+                         description='The unique identifier of a user'),
+    'full_name': fields.String(description='Users full name'),
+    'username': fields.String(required=True,
+                              description='Bucket list item title'),
+    'password': fields.String(required=True, description='User Password'),
+})

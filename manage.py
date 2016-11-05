@@ -5,7 +5,8 @@ from app import create_app, db, api
 from app.blister_api.models import User
 from app.blister_api.endpoints.bucket_lists import ns as bucket_list_namespace
 from app.blister_api.endpoints.items import ns as items_namespace
-
+from app.blister_api.endpoints.register_user import ns as register_namespace
+from app.blister_api.endpoints.login_user import ns as login_namespace
 
 # create the app
 app = create_app('development')
@@ -33,4 +34,6 @@ manager.add_command('db', MigrateCommand)
 if __name__ == '__main__':
     api.add_namespace(bucket_list_namespace)
     api.add_namespace(items_namespace)
+    api.add_namespace(register_namespace)
+    api.add_namespace(login_namespace)
     manager.run()

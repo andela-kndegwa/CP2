@@ -32,8 +32,8 @@ def create_app(config_name):
     It finally returns the app fully created
 
     '''
-    app = Flask(__name__)
-    app.config.from_object(config[config_name])
-    db.init_app(app)
-    app.register_blueprint(api_bp)
-    return app
+    app_main = Flask(__name__)
+    app_main.config.from_object(config[config_name])
+    db.init_app(app_main)
+    app_main.register_blueprint(api_bp)
+    return app_main

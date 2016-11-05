@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask_restplus import abort, Resource
 from app import api
 from app.blister_api.serializer import bucket_list_item
@@ -7,7 +7,7 @@ from app.blister_api.actions import create_bucket_list_item
 
 
 ns = api.namespace(
-    'blister/bucket_list_items',
+    'bucketlists/items/',
     description="Operations related to bucket lists items.")
 
 
@@ -24,7 +24,8 @@ class BucketListCollection(Resource):
         '''
         bucket_lists = BucketListItem.query.all()
         if not bucket_lists:
-            abort(404, message='There are no bucket list items at the moment.')
+            message = 'There are not bucket lists as of now'
+            return jsonify(message)
         else:
             return bucket_lists
 

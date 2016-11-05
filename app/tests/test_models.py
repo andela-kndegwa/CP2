@@ -1,4 +1,4 @@
-from models import User, BucketListItem, BucketList
+from app.blister_api.models import User, BucketListItem, BucketList
 import unittest  # Python unittesting framework
 from app import create_app, db
 import time
