@@ -2,10 +2,10 @@ import json
 from flask_testing import TestCase
 from app import create_app, db, api
 from app.blister_api.models import User, BucketList, BucketListItem
-from app.blister_api.endpoints.bucket_lists import ns as bucket_list_namespace
-from app.blister_api.endpoints.items import ns as items_namespace
-from app.blister_api.endpoints.register_user import ns as register_namespace
-from app.blister_api.endpoints.login_user import ns as login_namespace
+from app.blister_api.endpoints.bucket_lists import BucketListCollection
+from app.blister_api.endpoints.items import BucketListItemCollection
+# from app.blister_api.endpoints.register_user import ns as register_namespace
+# from app.blister_api.endpoints.login_user import ns as login_namespace
 
 import base_setup
 
@@ -20,8 +20,9 @@ class TestEndpointsClass(TestCase):
     def setUp(self):
         self.blister = self.create_app().test_client()
         db.create_all()
-        api.add_namespace(bucket_list_namespace)
-        api.add_namespace(items_namespace)
+        api.add_resource(BucketListCollection, base_url + 'bucketlists')
+        api.add_resource(BucketListItemCollection,
+                         base_url + 'bucketlists/items')
 
     def test_home_returns_404(self):
         '''
@@ -72,18 +73,18 @@ class TestAuthentication(TestCase):
     def create_app(self):
         return create_app('testing')
 
-    def setUp(self):
-        db.create_all()
-        api.add_namespace(register_namespace)
-        api.add_namespace(login_namespace)
-        db.create_all()
-        self.body = {
-            "username": "alexmagana",
-            "password": "safari",
-        }
-        self.test_client = self.create_app().test_client()
-        self.response = base_setup.send_post(self.test_client, base_url + '/auth/register',
-                                             self.body)
+    # def setUp(self):
+    #     db.create_all()
+    #     api.add_namespace(register_namespace)
+    #     api.add_namespace(login_namespace)
+    #     db.create_all()
+    #     self.body = {
+    #         "username": "alexmagana",
+    #         "password": "safari",
+    #     }
+    #     self.test_client = self.create_app().test_client()
+    #     self.response = base_setup.send_post(self.test_client, base_url + '/auth/register',
+    #                                          self.body)
 
     # def test_create_user_works(self):
     #     response_json = json.loads(self.response.data.decode('utf-8'))

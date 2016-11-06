@@ -1,20 +1,13 @@
 from flask import Flask, Blueprint
-from flask_restplus import Api
+from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 
 db = SQLAlchemy()  # Initialise the db
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1.0')
 
-# Defining flask_restplus parameters
-version = '1.0'
-title = 'BLister'
-description = 'BLister is a bucketlist application API'\
-    ' built with Flask and Swagger UI. '
-
 # Initialise the Api class
-api = Api(api_bp, version=version, title=title,
-          description=description)
+api = Api(api_bp)
 
 
 def create_app(config_name):

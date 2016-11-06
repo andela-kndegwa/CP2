@@ -21,7 +21,6 @@ class User(db.Model):
     """
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(128))
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
@@ -53,13 +52,13 @@ class User(db.Model):
         """
         return check_password_hash(self.password_hash, password)
 
-    def generate_authentication_token(self, expiration=1200):
+    def generate_authentication_token(self, expiration=12000):
         """
         Token Based authentication begins here.
 
 
         Arguments:
-        expiration = 1200 seconds i.e 20 Minutes
+        expiration = 12000 seconds i.e 20 Minutes
         """
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({"id": self.id})
@@ -109,6 +108,7 @@ class BucketList(db.Model):
     __tablename__ = 'bucketlists'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(70))
+    completed = db.Column(db.Boolean, default=False)
     description = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, onupdate=datetime.now)

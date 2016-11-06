@@ -1,37 +1,28 @@
-from flask_restplus import fields
-from app import api
+from flask_restful import fields as f
 
-bucket_list_item = api.model('Bucket list item', {
-    'id': fields.Integer(readOnly=True,
-                         description='The unique identifier of a bucket list item'),
-    'title': fields.String(required=True,
-                           description='Bucket list item title'),
-    'description': fields.String(description='Bucket list item body or description'),
-    'done': fields.Boolean(default=False),
-    'date_added': fields.DateTime,
-    'date_modified': fields.DateTime,
-    'bucketlist_id': fields.Integer(attribute='bucketlists.id'),
-    'bucketlist': fields.String(attribute='bucketlists.id')
-})
 
-bucket_list = api.model('Bucket list', {
-    'id': fields.Integer(readOnly=True,
-                         description='The unique identifier of a bucket list'),
-    'title': fields.String(required=True,
-                           description='Bucket list title'),
-    'description': fields.String(description='Bucket list body or description'),
-    'date_created': fields.DateTime,
-    'date_modified': fields.DateTime,
-    'user_id': fields.Integer(attribute='users.id'),
-    'user': fields.String(attribute='users.id')
+bucketlistitem_serializer = {
 
-})
+    'id': f.Integer,
+    'title': f.String,
+    'done': f.Boolean,
+    'description': f.String,
+    'date_created': f.DateTime(dt_format='rfc822'),
+    'date_modified': f.DateTime(dt_format='rfc822'),
+    'bucketlist_id': f.Integer(attribute='bucketlist_id'),
+    'added under': f.Integer(attribute='bucketlist'),
 
-user = api.model('User', {
-    'id': fields.Integer(readOnly=True,
-                         description='The unique identifier of a user'),
-    'full_name': fields.String(description='Users full name'),
-    'username': fields.String(required=True,
-                              description='Bucket list item title'),
-    'password': fields.String(required=True, description='User Password'),
-})
+}
+
+
+bucketlist_serializer = {
+    'id': f.Integer,
+    'title': f.String,
+    'completed': f.Boolean,
+    'description': f.String,
+    'date_created': f.DateTime(dt_format='rfc822'),
+    'date_modified': f.DateTime(dt_format='rfc822'),
+    'user_id': f.Integer(attribute='user_id'),
+    'user': f.String(attribute='user'),
+    'items': f.List(f.Nested(bucketlistitem_serializer)),
+}

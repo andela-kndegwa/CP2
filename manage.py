@@ -3,10 +3,13 @@ from flask_script import Manager, Shell
 
 from app import create_app, db, api
 from app.blister_api.models import User
-from app.blister_api.endpoints.bucket_lists import ns as bucket_list_namespace
-from app.blister_api.endpoints.items import ns as items_namespace
-from app.blister_api.endpoints.register_user import ns as register_namespace
-from app.blister_api.endpoints.login_user import ns as login_namespace
+from app.blister_api.endpoints.home import HomeMessage
+from app.blister_api.endpoints.bucket_lists import BucketListCollection
+from app.blister_api.endpoints.items import BucketListItemCollection
+from app.blister_api.endpoints.register import RegisterUser
+from app.blister_api.endpoints.login import LoginUser
+# from app.blister_api.endpoints.register_user import ns as register_namespace
+# from app.blister_api.endpoints.login_user import ns as login_namespace
 
 # create the app
 app = create_app('development')
@@ -18,6 +21,11 @@ migrate = Migrate(app, db)
 # Allows one to be able to access the User model right
 # from python manag.py shell as a function on manager.
 # add.command.
+
+
+@app.route('/')
+def home():
+    return 'Welcome to blister!'
 
 
 def make_shell_context():
@@ -32,8 +40,8 @@ manager.add_command('db', MigrateCommand)
 
 
 if __name__ == '__main__':
-    api.add_namespace(bucket_list_namespace)
-    api.add_namespace(items_namespace)
-    api.add_namespace(register_namespace)
-    api.add_namespace(login_namespace)
+    api.add_resource(RegisterUser, '/auth/register', endpoint='register')
+    api.add_resource(LoginUser, '/auth/login', endpoint='login')
+    api.add_resource(BucketListCollection, '/bucketlists')
+    api.add_resource(BucketListItemCollection, '/bucketlists/items')
     manager.run()

@@ -1,42 +1,41 @@
-from flask import request, jsonify
-from flask_restplus import abort, Resource
-from app import api
-from app.blister_api.serializer import bucket_list_item, bucket_list
+from flask import jsonify
+from flask_restful import Resource, reqparse, marshal_with
+
+from app.blister_api.authentication import auth
+from app.blister_api.serializer import bucketlist_serializer
+from app.blister_api.actions import create_bucketlist
+
+
 from app.blister_api.models import BucketList
-from app.blister_api.actions import create_bucket_list
 
 
-ns = api.namespace(
-    'bucketlists',
-    description="Operations related to individual bucket lists.")
-
-
-@ns.route('/')
-@api.response(200, 'Success')
 class BucketListCollection(Resource):
     """
-    This method retrieves all the bucket lists associcated
+    This class retrieves all the bucket lists associcated
     with a particular user.
+
+    Its initialised using the reqparse module from which
+    we get the RequestParser class and proceed to create
+    an instance of it which is used to validate arguments
+    parsed to the BucketList Resource.
     """
-    @api.marshal_with(bucket_list)
-    def get(self):
-        '''
-        This shows a list of all the bucket lists.
-        '''
-        bucket_lists = BucketList.query.all()
-        if not bucket_lists:
-            message = 'There are no bucket lists as of now'
-            return jsonify(message)
-        else:
-            return jsonify(bucket_lists), 200
+    decorators = [auth.login_required]
 
-    @api.marshal_with(bucket_list)
+    def __init__(self):
+        self.bucket_list_parser = reqparse.RequestParser()
+        self.bucket_list_parser.add_argument('title', type=str,
+                                             required=True,
+                                             help='Please provide a title for your bucketlist.',
+                                             location='json')
+        self.bucket_list_parser.add_argument(
+            'description', type=str, location='json')
+        self.bucket_list_parser.add_argument(
+            'Authorization', location='headers')
+        super(BucketListCollection, self).__init__()
+
+    @marshal_with(bucketlist_serializer)
     def post(self):
-        pass
+        data = self.bucket_list_parser.parse_args()
+        create_bucketlist(data)
+        
 
-    @api.expect(bucket_list)
-    def put(self):
-        pass
-
-    def delete(self):
-        pass
