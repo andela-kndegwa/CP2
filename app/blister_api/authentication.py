@@ -11,7 +11,6 @@ multi_auth = MultiAuth(basic_auth, token_auth)
 
 @basic_auth.verify_password
 def verify_password(username, password):
-    g.user = None
     user = User.query.filter_by(username=username).first()
     if user:
         if User().verify_password(password):
@@ -22,9 +21,8 @@ def verify_password(username, password):
 
 @token_auth.verify_token
 def verify_token(token):
-    g.user = None
-    user = User.verify_auth_token(token)
-    if user:
-        g.user = user
+    user_id = User.verify_auth_token(token)
+    if user_id:
+        g.user = User.query.filter_by(id=user_id).first()
         return True
     return False

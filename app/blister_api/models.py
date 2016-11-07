@@ -22,7 +22,7 @@ class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
-    username = db.Column(db.String(64))
+    username = db.Column(db.String(64), unique=True)
     password_hash = db.Column(db.String(128))
     bucket_list = relationship("BucketList")
 
@@ -52,16 +52,15 @@ class User(db.Model):
         """
         return check_password_hash(self.password_hash, password)
 
-    def generate_authentication_token(self, expiration=12000):
+    def generate_authentication_token(self, expires_in=30):
         """
         Token Based authentication begins here.
 
 
         Arguments:
-        expiration = 12000 seconds i.e 20 Minutes
         """
-        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
-        return s.dumps({"id": self.id})
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expires_in)
+        return s.dumps({"id": self.id}).decode('utf-8')
 
     @staticmethod
     def verify_auth_token(token):
@@ -69,9 +68,13 @@ class User(db.Model):
         This verifies the authentication token within the session.
         A static method is used as a user will only
         be known after the token is decoded.
+
+        Raise the more specific ERROR for the None
         """
         s = Serializer(current_app.config["SECRET_KEY"])
         try:
+            import pdb
+            pdb.set_trace()
             data = s.loads(token)
         except SignatureExpired:
             """Valid but expired token. """
@@ -86,9 +89,11 @@ class User(db.Model):
     def query_user(username, password):
         user = User.query.filter_by(username=username).first()
         if user is None:
-            return 'User does not exist'
+            # User does not exist
+            return 'Authentication failed.'
         if not user.verify_password(password):
-            return 'Incorrect password'
+            # Password verification failed
+            return 'Authentication failed.'
         return user
 
     def __repr__(self):

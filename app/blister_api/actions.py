@@ -1,4 +1,4 @@
-from flask import g
+from flask import g, jsonify
 from app import db
 from flask_restful import abort
 from models import BucketListItem, User, BucketList
@@ -16,21 +16,15 @@ def create_bucketlist(data):
     Description :
 
     """
+    if not data:
+        abort(400, 'Please add information for your bucketlist.')
     if not data.get('title'):
         abort(400, 'Please provide a title for your bucketlist')
     title = data.get('title')
     description = data.get('description')
-    user_id = data.get('user_id')
-    user = User.query.filter(User.id == user_id).one()
-    bucketlist = BucketList(title=title, description=description,
-                            user_id=user_id, user=user)
-    g.user.bucket_list.append(bucketlist)
+    bucketlist = BucketList(title=title, description=description)
     save(bucketlist)
-    return {'Bucket list': '%s added successfully'} % title, 201
-
-
-def update_bucket_list():
-    pass
+    return {'Bucket list': 'Added added successfully'}, 201
 
 
 def delete_bucket_list():
@@ -92,16 +86,17 @@ def login_user(data):
         abort(400, message='Please enter a username and password to log in.')
     user = User.query_user(username, password)
     if type(user) == str:
-        abort(400, message=user)
+        abort(401, message=user)
     else:
         return user
 
 
 def retrieve_all_bucketlists():
-    bucketlists = BucketList.query.all()
-    if not bucketlists:
-        abort(400, message='No bucket lists as of now')
-    else:
-        return bucketlists
+    """
+    This accesses the global variable to be able to access the
+    user object that contains user details and information.
 
-
+    """
+    bucketlists = BucketList.query.filter(
+        BucketList.user_id == g.user.id).all()
+    return bucketlists

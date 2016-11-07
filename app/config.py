@@ -1,6 +1,4 @@
 import os
-import random
-import string
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -10,10 +8,7 @@ class Config(object):
     the production, development and testing databases to
     be created and configured from scratch with appropriate settings.
     '''
-    SECRET_KEY = ''.join(random.choice(
-        string.ascii_uppercase + string.digits)for x in xrange(32))
-    # The above generates a random and hard to guess string
-    # and stores it in the SECRET_KEY variable.
+    SECRET_KEY = 'LERHEX8EKDZIPR8O3ZF26Z4IDA9AWPFS'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     DEBUG = True

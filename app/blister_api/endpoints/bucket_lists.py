@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_restful import Resource, reqparse, marshal_with
 
 
-from app.blister_api.authentication import multi_auth
+from app.blister_api.authentication import multi_auth, verify_token
 from app.blister_api.serializer import bucketlist_serializer, bucketlist_collection_serializer
 from app.blister_api.actions import create_bucketlist, retrieve_all_bucketlists
 
@@ -39,7 +39,8 @@ class BucketListCollection(Resource):
         data = self.bucket_list_parser.parse_args()
         create_bucketlist(data)
 
-    @marshal_with(bucketlist_collection_serializer)
+    # @marshal_with(bucketlist_collection_serializer)
     def get(self):
         bucketlists = retrieve_all_bucketlists()
-        return bucketlists
+        return {'bucketlists': bucketlists}, 200
+
