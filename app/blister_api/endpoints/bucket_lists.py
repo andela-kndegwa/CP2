@@ -1,9 +1,10 @@
 from flask import jsonify
 from flask_restful import Resource, reqparse, marshal_with
 
-from app.blister_api.authentication import auth
-from app.blister_api.serializer import bucketlist_serializer
-from app.blister_api.actions import create_bucketlist
+
+from app.blister_api.authentication import multi_auth
+from app.blister_api.serializer import bucketlist_serializer, bucketlist_collection_serializer
+from app.blister_api.actions import create_bucketlist, retrieve_all_bucketlists
 
 
 from app.blister_api.models import BucketList
@@ -19,7 +20,7 @@ class BucketListCollection(Resource):
     an instance of it which is used to validate arguments
     parsed to the BucketList Resource.
     """
-    decorators = [auth.login_required]
+    decorators = [multi_auth.login_required]
 
     def __init__(self):
         self.bucket_list_parser = reqparse.RequestParser()
@@ -37,5 +38,8 @@ class BucketListCollection(Resource):
     def post(self):
         data = self.bucket_list_parser.parse_args()
         create_bucketlist(data)
-        
 
+    @marshal_with(bucketlist_collection_serializer)
+    def get(self):
+        bucketlists = retrieve_all_bucketlists()
+        return bucketlists

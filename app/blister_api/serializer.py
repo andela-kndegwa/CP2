@@ -26,3 +26,8 @@ bucketlist_serializer = {
     'user': f.String(attribute='user'),
     'items': f.List(f.Nested(bucketlistitem_serializer)),
 }
+
+
+bucketlist_collection_serializer = {
+    'bucketlists': f.List(f.Nested(bucketlist_serializer)),
+}

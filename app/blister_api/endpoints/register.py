@@ -16,9 +16,7 @@ class RegisterUser(Resource):
                                                location='json')
         super(RegisterUser, self).__init__()
 
-    @marshal_with({'token': fields.String})
     def post(self):
         data = self.register_user_parser.parse_args()
-        user = register_user(data)
-        token = user.generate_authentication_token()
-        return {'token': token.decode('utf-8')}, 201
+        register_user(data)
+        return {'Message': 'Sign Up successful. Please log in to use the service.'}, 201

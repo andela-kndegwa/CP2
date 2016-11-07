@@ -9,12 +9,6 @@ def save(record):
     db.session.commit()
 
 
-def validate_data_is_sent(data):
-    if not data:
-        abort(400, 'No data sent. Please add the required information')
-    return data
-
-
 def create_bucketlist(data):
     """
     Attributes:
@@ -22,7 +16,6 @@ def create_bucketlist(data):
     Description :
 
     """
-    data = validate_data_is_sent(data)
     if not data.get('title'):
         abort(400, 'Please provide a title for your bucketlist')
     title = data.get('title')
@@ -104,13 +97,11 @@ def login_user(data):
         return user
 
 
-def logout_user():
-    pass
+def retrieve_all_bucketlists():
+    bucketlists = BucketList.query.all()
+    if not bucketlists:
+        abort(400, message='No bucket lists as of now')
+    else:
+        return bucketlists
 
 
-def update_user():
-    pass
-
-
-def delete_user():
-    pass
