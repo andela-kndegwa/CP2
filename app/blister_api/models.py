@@ -52,7 +52,7 @@ class User(db.Model):
         """
         return check_password_hash(self.password_hash, password)
 
-    def generate_authentication_token(self, expires_in=30):
+    def generate_authentication_token(self, expires_in=3600):
         """
         Token Based authentication begins here.
 
@@ -73,8 +73,6 @@ class User(db.Model):
         """
         s = Serializer(current_app.config["SECRET_KEY"])
         try:
-            import pdb
-            pdb.set_trace()
             data = s.loads(token)
         except SignatureExpired:
             """Valid but expired token. """

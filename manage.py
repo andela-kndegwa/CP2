@@ -3,7 +3,6 @@ from flask_script import Manager, Shell
 
 from app import create_app, db, api
 from app.blister_api.models import User
-from app.blister_api.endpoints.home import HomeMessage
 from app.blister_api.endpoints.bucket_lists import BucketListCollection
 from app.blister_api.endpoints.items import BucketListItemCollection
 from app.blister_api.endpoints.register import RegisterUser

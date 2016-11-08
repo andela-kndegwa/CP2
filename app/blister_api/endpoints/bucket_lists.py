@@ -37,10 +37,12 @@ class BucketListCollection(Resource):
     @marshal_with(bucketlist_serializer)
     def post(self):
         data = self.bucket_list_parser.parse_args()
-        create_bucketlist(data)
+        import pdb
+        pdb.set_trace()
+        bucketlist = create_bucketlist(data)
+        return {'bucketlist': bucketlist}, 201
 
     # @marshal_with(bucketlist_collection_serializer)
     def get(self):
         bucketlists = retrieve_all_bucketlists()
         return {'bucketlists': bucketlists}, 200
-

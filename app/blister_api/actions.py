@@ -22,9 +22,12 @@ def create_bucketlist(data):
         abort(400, 'Please provide a title for your bucketlist')
     title = data.get('title')
     description = data.get('description')
-    bucketlist = BucketList(title=title, description=description)
+    user_id = g.user.id
+    bucketlist = BucketList(title=title,
+                            description=description,
+                            user_id=user_id)
     save(bucketlist)
-    return {'Bucket list': 'Added added successfully'}, 201
+    return bucketlist
 
 
 def delete_bucket_list():
