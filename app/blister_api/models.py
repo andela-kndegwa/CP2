@@ -118,6 +118,8 @@ class BucketList(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship("User", back_populates="bucket_list")
 
+   
+
     @staticmethod
     def query_bucket_list(bucket_list_title):
         bucket_list = BucketList.query.filter_by(

@@ -22,8 +22,7 @@ bucketlist_serializer = {
     'description': f.String,
     'date_created': f.DateTime(dt_format='rfc822'),
     'date_modified': f.DateTime(dt_format='rfc822'),
-    'user_id': f.Integer(attribute='user_id'),
-    'user': f.String(attribute='user'),
+    'created_by': f.Integer(attribute='user_id'),
     'items': f.List(f.Nested(bucketlistitem_serializer)),
 }
 

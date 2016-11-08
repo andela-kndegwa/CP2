@@ -41,6 +41,9 @@ manager.add_command('db', MigrateCommand)
 if __name__ == '__main__':
     api.add_resource(RegisterUser, '/auth/register', endpoint='register')
     api.add_resource(LoginUser, '/auth/login', endpoint='login')
-    api.add_resource(BucketListCollection, '/bucketlists')
-    api.add_resource(BucketListItemCollection, '/bucketlists/items')
+    api.add_resource(BucketListCollection, '/bucketlists', '/bucketlists/<int:id>',
+                     endpoint='bucketlists')
+    api.add_resource(BucketListItemCollection, '/bucketlists/<int:bucketlist_id>/items',
+                     '/bucketlists/<int:bucketlist_id>/items/<int:item_id>')
+
     manager.run()

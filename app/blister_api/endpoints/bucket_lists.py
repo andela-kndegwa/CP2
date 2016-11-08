@@ -4,7 +4,8 @@ from flask_restful import Resource, reqparse, marshal_with
 
 from app.blister_api.authentication import multi_auth, verify_token
 from app.blister_api.serializer import bucketlist_serializer, bucketlist_collection_serializer
-from app.blister_api.actions import create_bucketlist, retrieve_all_bucketlists
+from app.blister_api.actions import create_bucketlist, retrieve_all_bucketlists, retrieve_particular_bucketlist
+from app.blister_api.actions import update_bucketlist, delete_bucket_list
 
 
 from app.blister_api.models import BucketList
@@ -35,14 +36,31 @@ class BucketListCollection(Resource):
         super(BucketListCollection, self).__init__()
 
     @marshal_with(bucketlist_serializer)
-    def post(self):
+    def post(self, id=None):
+        if id:
+            return {'Message': "Bad Request"}, 400
         data = self.bucket_list_parser.parse_args()
-        import pdb
-        pdb.set_trace()
         bucketlist = create_bucketlist(data)
         return {'bucketlist': bucketlist}, 201
 
-    # @marshal_with(bucketlist_collection_serializer)
-    def get(self):
+    @marshal_with(bucketlist_collection_serializer)
+    def get(self, id=None):
+        if id:
+            bucketlists = retrieve_particular_bucketlist(id)
+            return {'bucketlists': bucketlists}, 200
         bucketlists = retrieve_all_bucketlists()
+        # import pdb;pdb.set_trace()
         return {'bucketlists': bucketlists}, 200
+
+    @marshal_with(bucketlist_serializer)
+    def put(self, id=None):
+        data = self.bucket_list_parser.parse_args()
+        bucketlist = update_bucketlist(data, id)
+        return {'bucketlist' : bucketlist}, 200
+
+    def delete(self, id=None):
+        if id:
+            delete_bucket_list(id)
+            return {'Message': "Bucket list successfully deleted."}, 200
+        else:
+            return {'Message': "Bad Request"}, 400
