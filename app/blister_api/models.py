@@ -4,7 +4,6 @@ from flask import current_app
 from itsdangerous import (
     TimedJSONWebSignatureSerializer as Serializer,
     BadSignature, SignatureExpired)
-from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
@@ -24,7 +23,8 @@ class User(db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True)
     password_hash = db.Column(db.String(128))
-    bucket_list = relationship("BucketList")
+    bucketlists = db.relationship('BucketList', backref='user',
+                                  cascade="all, delete", lazy='dynamic')
 
     @property
     def password(self):
@@ -116,9 +116,8 @@ class BucketList(db.Model):
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, onupdate=datetime.now)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship("User", back_populates="bucket_list")
-
-   
+    items = db.relationship('BucketListItem', backref='bucketlist',
+                            cascade="all, delete", lazy='dynamic')
 
     @staticmethod
     def query_bucket_list(bucket_list_title):
@@ -148,8 +147,6 @@ class BucketListItem(db.Model):
     date_added = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, onupdate=datetime.now)
     bucketlist_id = db.Column(db.Integer, db.ForeignKey("bucketlists.id"))
-    bucketlist = db.relationship('BucketList', backref=db.backref(
-        'bucketlist_items', lazy='dynamic'))
 
     @staticmethod
     def query_item(title):

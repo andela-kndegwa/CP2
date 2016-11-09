@@ -1,8 +1,13 @@
 from flask import request, jsonify
-from flask_restplus import abort, Resource
+from flask_restful import Resource, reqparse, marshal_with
 from app import api
 # from app.blister_api.serializer import bucket_list_item
 from app.blister_api.models import BucketListItem
+from app.blister_api.authentication import multi_auth
+
+
+from app.blister_api.serializer import bucketlist_serializer
+from app.blister_api.actions import retrieve_particular_bucketlist_item, retrieve_all_bucketlists_items
 from app.blister_api.actions import create_bucket_list_item
 
 
@@ -16,21 +21,23 @@ class BucketListItemCollection(Resource):
     This method retrieves all the bucket lists associcated
     with a particular user.
     """
-    def get(self):
-        '''
-        This shows a list of all the bucket list items on blister.
-        '''
-        bucket_lists = BucketListItem.query.all()
-        if not bucket_lists:
-            message = 'There are not bucket lists as of now'
-            return jsonify(message)
-        else:
-            return bucket_lists
+    decorators = [multi_auth.login_required]
 
-    def post(self):
-        """
-        Creates a new bucket list item category.
-        """
-        data = request.json
-        create_bucket_list_item(data)
-        return data, 201
+    def __init__(self):
+        self.item_parser = reqparse.RequestParser()
+        self.item_parser.add_argument('title', type=str,
+                                             required=True,
+                                             help='Please provide a title for your bucketlist item.',
+                                             location='json')
+        self.item_parser.add_argument(
+            'done', type=int, location='json')
+        super(BucketListItemCollection, self).__init__()
+
+    @marshal_with(bucketlist_serializer)
+    def get(self, bucketlist_id=None, item_id=None):
+        if bucketlist_id:
+            items = retrieve_particular_bucketlist_item(bucketlist_id)
+            return {'items': items}, 200
+        items = retrieve_all_bucketlists_items()
+        # import pdb;pdb.set_trace()
+        return {'items': items}, 200

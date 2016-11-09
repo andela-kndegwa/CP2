@@ -35,7 +35,7 @@ class BucketListCollection(Resource):
             'Authorization', location='headers')
         super(BucketListCollection, self).__init__()
 
-    @marshal_with(bucketlist_serializer)
+    @marshal_with(bucketlist_collection_serializer)
     def post(self, id=None):
         if id:
             return {'Message': "Bad Request"}, 400
@@ -46,17 +46,16 @@ class BucketListCollection(Resource):
     @marshal_with(bucketlist_collection_serializer)
     def get(self, id=None):
         if id:
-            bucketlists = retrieve_particular_bucketlist(id)
-            return {'bucketlists': bucketlists}, 200
+            bucketlist = retrieve_particular_bucketlist(id)
+            return {'bucketlists': bucketlist}, 200
         bucketlists = retrieve_all_bucketlists()
-        # import pdb;pdb.set_trace()
         return {'bucketlists': bucketlists}, 200
 
     @marshal_with(bucketlist_serializer)
     def put(self, id=None):
         data = self.bucket_list_parser.parse_args()
         bucketlist = update_bucketlist(data, id)
-        return {'bucketlist' : bucketlist}, 200
+        return {'bucketlist': bucketlist}, 200
 
     def delete(self, id=None):
         if id:
