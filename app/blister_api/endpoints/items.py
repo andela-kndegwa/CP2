@@ -1,21 +1,13 @@
-from flask import request, jsonify
 from flask_restful import Resource, reqparse, marshal_with
-from app import api
-# from app.blister_api.serializer import bucket_list_item
-from app.blister_api.models import BucketListItem
+
 from app.blister_api.authentication import multi_auth
-
-
 from app.blister_api.serializer import bucketlist_serializer
 from app.blister_api.serializer import bucketlistitem_serializer
-from app.blister_api.actions import retrieve_particular_bucketlist_item, retrieve_all_bucketlists_items
+from app.blister_api.actions import retrieve_all_bucketlists_items
+from app.blister_api.actions import retrieve_particular_bucketlist_item
 from app.blister_api.actions import create_bucket_list_item
 from app.blister_api.actions import update_bucket_list_item
-
-
-# ns = api.namespace(
-#     'bucketlists/items/',
-#     description="Operations related to bucket lists items.")
+from app.blister_api.actions import delete_bucket_list_item
 
 
 class BucketListItemCollection(Resource):
@@ -34,7 +26,8 @@ class BucketListItemCollection(Resource):
         self.item_parser.add_argument(
             'description', type=str, location='json')
         self.item_parser.add_argument(
-            'bucketlist_id', type=int, location='json')
+            'bucketlist_id', type=int, location='json',
+            help='Please provide a bucketlist ID for the item.')
         self.item_parser.add_argument(
             'done', type=int, location='json')
         super(BucketListItemCollection, self).__init__()
@@ -58,3 +51,7 @@ class BucketListItemCollection(Resource):
         data = self.item_parser.parse_args()
         item = update_bucket_list_item(data, item_id)
         return {'item': item}
+
+    def delete(self, bucketlist_id, item_id):
+        result = delete_bucket_list_item(bucketlist_id, item_id)
+        return result, 204

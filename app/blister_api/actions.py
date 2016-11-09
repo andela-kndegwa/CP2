@@ -1,7 +1,10 @@
-from flask import g, jsonify
-from app import db
+from flask import g
 from flask_restful import abort
+
+from app import db
 from models import BucketListItem, User, BucketList
+
+# Database save, delete and update functionality.
 
 
 def save(record):
@@ -16,6 +19,50 @@ def delete(record):
 
 def update():
     db.session.commit()
+
+# Ends here.
+# -------------------------------------------------
+# Actions pertaining to users
+
+
+def register_user(data):
+    '''
+    data here is the JSON Object representing
+    the request sent with the URI
+    '''
+    username = data.get('username')
+    password = data.get('password')
+    email = data.get('email')
+    if not username or not password or not email:
+        abort(400, message='Please enter a username, email and password to register.')
+    username_exists = User.query.filter_by(username=username).first()
+    email_exists = User.query.filter_by(email=email).first()
+    if email_exists or username_exists:
+        abort(400, message='Username or email address added already exist.')
+    user = User(username=username, password=password, email=email)
+    save(user)
+    return user
+
+
+def login_user(data):
+    """
+
+    """
+    username = data.get('username')
+    password = data.get('password')
+    if not username or not password:
+        abort(400, message='Please enter a username and password to log in.')
+    user = User.query_user(username, password)
+    if type(user) == str:
+        abort(401, message=user)
+    else:
+        return user
+
+# Ends here.
+# -------------------------------------------------
+# C.R.U.D Operations for the API Begin here
+# =================================================
+# CREATE bucket list and bucket list items
 
 
 def create_bucketlist(data):
@@ -55,8 +102,6 @@ def create_bucket_list_item(data):
     'description': Extra description for the item
     'bucket': 'String' value highlighting the particular bucket list
     '''
-    import pdb
-    pdb.set_trace()
     if not data:
         abort(400, 'Please add information for your bucketlist.')
     if not data.get('title'):
@@ -73,6 +118,44 @@ def create_bucket_list_item(data):
     save(item)
     bucketlist.items.append(item)
     return item
+
+# =================================================
+# READ bucket list and bucket list items
+
+
+def retrieve_all_bucketlists():
+    """
+    This accesses the global variable to be able to access the
+    user object that contains user details and information.
+
+    """
+    bucketlists = BucketList.query.filter(
+        BucketList.user_id == g.user.id).all()
+    return bucketlists
+
+
+def retrieve_particular_bucketlist(bucketlist_id):
+    bucketlist = BucketList.query.filter(
+        BucketList.id == bucketlist_id).first()
+    return bucketlist
+
+
+def retrieve_particular_bucketlist_item(item_id):
+    item = BucketListItem.query.filter(BucketListItem.id == item_id).first()
+    return item
+
+
+def retrieve_all_bucketlists_items():
+    """
+    This accesses the global variable to be able to access the
+    user object that contains user details and information.
+
+    """
+    items = BucketListItem.query.filter(
+        BucketListItem.bucketlist_id == g.user.bucket_list.id).all()
+    return items
+# =================================================
+# UPDATE  bucket list and bucket list items
 
 
 def update_bucketlist(data, bucketlist_id):
@@ -104,39 +187,8 @@ def update_bucket_list_item(data, item_id):
     update()
     return {'item': item}
 
-
-def register_user(data):
-    '''
-    data here is the JSON Object representing
-    the request sent with the URI
-    '''
-    username = data.get('username')
-    password = data.get('password')
-    email = data.get('email')
-    if not username or not password or not email:
-        abort(400, message='Please enter a username, email and password to register.')
-    username_exists = User.query.filter_by(username=username).first()
-    email_exists = User.query.filter_by(email=email).first()
-    if email_exists or username_exists:
-        abort(400, message='Either the username or email address added already exist.')
-    user = User(username=username, password=password, email=email)
-    save(user)
-    return user
-
-
-def login_user(data):
-    """
-
-    """
-    username = data.get('username')
-    password = data.get('password')
-    if not username or not password:
-        abort(400, message='Please enter a username and password to log in.')
-    user = User.query_user(username, password)
-    if type(user) == str:
-        abort(401, message=user)
-    else:
-        return user
+# =================================================
+# DELETE  bucket list and bucket list items
 
 
 def delete_bucket_list(bucketlist_id):
@@ -144,40 +196,8 @@ def delete_bucket_list(bucketlist_id):
     delete(bucketlist)
 
 
-def delete_bucket_list_item(item_id):
-    item = BucketListItem.query.filter_by(id=item_id).first_or_404()
+def delete_bucket_list_item(bucketlist_id=None, item_id=None):
+    item = BucketListItem.query.filter_by(id=item_id,
+                                          bucketlist_id=bucketlist_id).first_or_404()
     delete(item)
-
-
-def retrieve_particular_bucketlist(bucketlist_id):
-    bucketlist = BucketList.query.filter(
-        BucketList.id == bucketlist_id).first()
-    return bucketlist
-
-
-def retrieve_particular_bucketlist_item(item_id):
-    item = BucketListItem.query.filter(BucketListItem.id == item_id).first()
-    return item
-
-
-def retrieve_all_bucketlists():
-    """
-    This accesses the global variable to be able to access the
-    user object that contains user details and information.
-
-    """
-    # import pdb;pdb.set_trace()
-    bucketlists = BucketList.query.filter(
-        BucketList.user_id == g.user.id).all()
-    return bucketlists
-
-
-def retrieve_all_bucketlists_items():
-    """
-    This accesses the global variable to be able to access the
-    user object that contains user details and information.
-
-    """
-    items = BucketListItem.query.filter(
-        BucketListItem.bucketlist_id == g.user.bucket_list.id).all()
-    return items
+    return ''

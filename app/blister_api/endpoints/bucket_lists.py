@@ -35,13 +35,13 @@ class BucketListCollection(Resource):
             'Authorization', location='headers')
         super(BucketListCollection, self).__init__()
 
-    @marshal_with(bucketlist_collection_serializer)
+    @marshal_with(bucketlist_serializer)
     def post(self, id=None):
         if id:
             return {'Message': "Bad Request"}, 400
         data = self.bucket_list_parser.parse_args()
         bucketlist = create_bucketlist(data)
-        return {'bucketlist': bucketlist}, 201
+        return {'bucketlists': bucketlist}, 201
 
     @marshal_with(bucketlist_collection_serializer)
     def get(self, id=None):
@@ -60,6 +60,6 @@ class BucketListCollection(Resource):
     def delete(self, id=None):
         if id:
             delete_bucket_list(id)
-            return {'Message': "Bucket list successfully deleted."}, 200
+            return {'Message': "Bucket list successfully deleted."}, 204
         else:
             return {'Message': "Bad Request"}, 400

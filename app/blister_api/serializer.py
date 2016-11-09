@@ -7,7 +7,7 @@ bucketlistitem_serializer = {
     'title': f.String,
     'done': f.Boolean,
     'description': f.String,
-    'date_created': f.DateTime(dt_format='rfc822'),
+    'date_added': f.DateTime(dt_format='rfc822'),
     'date_modified': f.DateTime(dt_format='rfc822'),
     'bucketlist_id': f.Integer(attribute='bucketlist_id'),
 }
