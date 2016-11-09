@@ -40,6 +40,7 @@ def create_bucketlist(data):
     bucketlist = BucketList(title=title,
                             description=description,
                             user_id=user_id)
+    g.user.bucketlists.append(bucketlist)
     save(bucketlist)
     return {'bucketlist': bucketlist}
 
@@ -54,17 +55,23 @@ def create_bucket_list_item(data):
     'description': Extra description for the item
     'bucket': 'String' value highlighting the particular bucket list
     '''
+    import pdb
+    pdb.set_trace()
     if not data:
         abort(400, 'Please add information for your bucketlist.')
     if not data.get('title'):
         abort(400, 'Please provide a title for your bucketlist')
     title = data.get('title')
-    description = data.get('description', '')
-    bucketlist_id = g.user.bucket_list.id
+    description = data.get('description')
+    bucketlist_id = data.get('bucketlist_id')
+    if not bucketlist_id:
+        return {'Message': 'Please enter bucketlist_id'}, 400
+    bucketlist = BucketList.query.filter_by(id=bucketlist_id).first()
     item = BucketListItem(title=title,
                           description=description,
                           bucketlist_id=bucketlist_id)
     save(item)
+    bucketlist.items.append(item)
     return item
 
 
@@ -84,8 +91,18 @@ def update_bucketlist(data, bucketlist_id):
     return {'bucketlist': bucketlist}
 
 
-def update_bucket_list_item():
-    pass
+def update_bucket_list_item(data, item_id):
+    if not data:
+        abort(400, 'Please add information for your bucketlist item.')
+    item = BucketListItem.query.filter_by(id=item_id).first_or_404()
+    if not item:
+        abort(404, 'Bucket list item not found.')
+    title = data.get('title', item.title)
+    description = data.get('description', item.description)
+    item.title = title
+    item.description = description
+    update()
+    return {'item': item}
 
 
 def register_user(data):
@@ -133,7 +150,8 @@ def delete_bucket_list_item(item_id):
 
 
 def retrieve_particular_bucketlist(bucketlist_id):
-    bucketlist = BucketList.query.filter(BucketList.id == bucketlist_id).first()
+    bucketlist = BucketList.query.filter(
+        BucketList.id == bucketlist_id).first()
     return bucketlist
 
 

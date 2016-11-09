@@ -111,7 +111,6 @@ class BucketList(db.Model):
     __tablename__ = 'bucketlists'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(70))
-    completed = db.Column(db.Boolean, default=False)
     description = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, onupdate=datetime.now)
