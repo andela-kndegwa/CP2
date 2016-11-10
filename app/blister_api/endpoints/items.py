@@ -30,7 +30,7 @@ class BucketListItemCollection(Resource):
             'bucketlist_id', type=int, location='json',
             help='Please provide a bucketlist ID for the item.')
         self.item_parser.add_argument(
-            'done', type=int, location='json')
+            'done', type=bool, location='json')
         super(BucketListItemCollection, self).__init__()
 
     @marshal_with(bucketlist_item_collection_serializer)
@@ -48,11 +48,11 @@ class BucketListItemCollection(Resource):
         item = create_bucket_list_item(data, bucketlist_id)
         return item, 201
 
-    @marshal_with(bucketlist_serializer)
+    @marshal_with(bucketlistitem_serializer)
     def put(self, bucketlist_id=None, item_id=None):
         data = self.item_parser.parse_args()
         item = update_bucket_list_item(data, item_id)
-        return {'item': item}
+        return item, 200
 
     def delete(self, bucketlist_id, item_id):
         result = delete_bucket_list_item(bucketlist_id, item_id)

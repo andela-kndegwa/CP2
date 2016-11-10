@@ -114,9 +114,10 @@ def create_bucket_list_item(data, bucketlist_id):
         abort(400, 'Please provide a title for your bucketlist')
     title = data.get('title')
     description = data.get('description')
-    # if not bucketlist_id:
-    #     return {'Message': 'Please enter bucketlist_id'}, 400
     bucketlist = BucketList.query.filter_by(id=bucketlist_id).first()
+    item_title_exists = BucketListItem.query.filter_by(title=title).first()
+    if item_title_exists:
+        abort(400, message='Two bucket lists cannot have the same title.')
     item = BucketListItem(title=title,
                           description=description,
                           bucketlist_id=bucketlist_id)
@@ -146,11 +147,17 @@ def retrieve_particular_bucketlist(bucketlist_id):
         abort(404, message='Bucket list not found.')
     if bucketlist.user_id != g.user.id:
         return abort(401,
-                     message="Unauthorized access. You do not own that bucket list.")
+                     message="Unauthorized access." +
+                     "You do not own that bucket list.")
     return bucketlist
 
 
 def retrieve_particular_bucketlist_item(bucketlist_id, item_id):
+    bucketlist = BucketList.query.filter_by(id=bucketlist_id).first()
+    if bucketlist.user_id != g.user.id:
+        return abort(401,
+                     message="Unauthorized access." +
+                     "You do not own that bucket list.")
     item = BucketListItem.query.filter_by(
         id=item_id, bucketlist_id=bucketlist_id).first()
     return item
@@ -162,6 +169,11 @@ def retrieve_all_bucketlists_items(bucketlist_id):
     user object that contains user details and information.
 
     """
+    bucketlist = BucketList.query.filter_by(id=bucketlist_id).first()
+    if bucketlist.user_id != g.user.id:
+        return abort(401,
+                     message="Unauthorized access." +
+                     "You do not own that bucket list.")
     items = BucketListItem.query.filter_by(bucketlist_id=bucketlist_id)
     return items
 # =================================================
@@ -192,10 +204,12 @@ def update_bucket_list_item(data, item_id):
         abort(404, 'Bucket list item not found.')
     title = data.get('title', item.title)
     description = data.get('description', item.description)
+    done = data.get('done', False)
     item.title = title
     item.description = description
+    item.done = done
     update()
-    return {'item': item}
+    return item
 
 # =================================================
 # DELETE  bucket list and bucket list items
