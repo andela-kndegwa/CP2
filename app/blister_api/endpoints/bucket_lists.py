@@ -2,13 +2,10 @@ from flask import jsonify
 from flask_restful import Resource, reqparse, marshal_with
 
 
-from app.blister_api.authentication import multi_auth, verify_token
+from app.blister_api.authentication import multi_auth
 from app.blister_api.serializer import bucketlist_serializer, bucketlist_collection_serializer
 from app.blister_api.actions import create_bucketlist, retrieve_all_bucketlists, retrieve_particular_bucketlist
 from app.blister_api.actions import update_bucketlist, delete_bucket_list
-
-
-from app.blister_api.models import BucketList
 
 
 class BucketListCollection(Resource):
@@ -40,22 +37,22 @@ class BucketListCollection(Resource):
         if id:
             return {'Message': "Bad Request"}, 400
         data = self.bucket_list_parser.parse_args()
-        bucketlist = create_bucketlist(data)
-        return {'bucketlists': bucketlist}, 201
+        response = create_bucketlist(data)
+        return response, 201
 
-    @marshal_with(bucketlist_collection_serializer)
+    @marshal_with(bucketlist_serializer)
     def get(self, id=None):
         if id:
             bucketlist = retrieve_particular_bucketlist(id)
-            return {'bucketlists': bucketlist}, 200
+            return bucketlist, 200
         bucketlists = retrieve_all_bucketlists()
-        return {'bucketlists': bucketlists}, 200
+        return bucketlists, 200
 
     @marshal_with(bucketlist_serializer)
-    def put(self, id=None):
+    def put(self, id):
         data = self.bucket_list_parser.parse_args()
         bucketlist = update_bucketlist(data, id)
-        return {'bucketlist': bucketlist}, 200
+        return bucketlist, 200
 
     def delete(self, id=None):
         if id:

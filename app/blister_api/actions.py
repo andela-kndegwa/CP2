@@ -1,8 +1,11 @@
 from flask import g
-from flask_restful import abort
+from flask_restful import abort, marshal
 
 from app import db
 from models import BucketListItem, User, BucketList
+from app.blister_api.serializer import bucketlist_serializer, \
+    bucketlist_item_collection_serializer, \
+    bucketlistitem_serializer
 
 # Database save, delete and update functionality.
 
@@ -32,14 +35,12 @@ def register_user(data):
     '''
     username = data.get('username')
     password = data.get('password')
-    email = data.get('email')
-    if not username or not password or not email:
-        abort(400, message='Please enter a username, email and password to register.')
+    if not username or not password:
+        abort(400, message='Please enter a username and password to register.')
     username_exists = User.query.filter_by(username=username).first()
-    email_exists = User.query.filter_by(email=email).first()
-    if email_exists or username_exists:
-        abort(400, message='Username or email address added already exist.')
-    user = User(username=username, password=password, email=email)
+    if username_exists:
+        abort(400, message='Username added already exist.')
+    user = User(username=username, password=password)
     save(user)
     return user
 
@@ -89,10 +90,12 @@ def create_bucketlist(data):
                             user_id=user_id)
     g.user.bucketlists.append(bucketlist)
     save(bucketlist)
-    return {'bucketlist': bucketlist}
+    return bucketlist
+    # response = marshal(bucketlist, bucketlist_serializer)
+    # return response
 
 
-def create_bucket_list_item(data):
+def create_bucket_list_item(data, bucketlist_id):
     '''
     data here is the JSON Object representing
     the request sent with the URI
@@ -101,6 +104,9 @@ def create_bucket_list_item(data):
     'title' : Title of the blister item
     'description': Extra description for the item
     'bucket': 'String' value highlighting the particular bucket list
+
+
+    POST THE ACTUAL NAME OF THE PERSON WHO CREATED THE BUCKET LIST
     '''
     if not data:
         abort(400, 'Please add information for your bucketlist.')
@@ -108,9 +114,8 @@ def create_bucket_list_item(data):
         abort(400, 'Please provide a title for your bucketlist')
     title = data.get('title')
     description = data.get('description')
-    bucketlist_id = data.get('bucketlist_id')
-    if not bucketlist_id:
-        return {'Message': 'Please enter bucketlist_id'}, 400
+    # if not bucketlist_id:
+    #     return {'Message': 'Please enter bucketlist_id'}, 400
     bucketlist = BucketList.query.filter_by(id=bucketlist_id).first()
     item = BucketListItem(title=title,
                           description=description,
@@ -135,24 +140,29 @@ def retrieve_all_bucketlists():
 
 
 def retrieve_particular_bucketlist(bucketlist_id):
-    bucketlist = BucketList.query.filter(
-        BucketList.id == bucketlist_id).first()
+    bucketlist = BucketList.query.filter_by(
+        id=bucketlist_id).first()
+    if not bucketlist:
+        abort(404, message='Bucket list not found.')
+    if bucketlist.user_id != g.user.id:
+        return abort(401,
+                     message="Unauthorized access. You do not own that bucket list.")
     return bucketlist
 
 
-def retrieve_particular_bucketlist_item(item_id):
-    item = BucketListItem.query.filter(BucketListItem.id == item_id).first()
+def retrieve_particular_bucketlist_item(bucketlist_id, item_id):
+    item = BucketListItem.query.filter_by(
+        id=item_id, bucketlist_id=bucketlist_id).first()
     return item
 
 
-def retrieve_all_bucketlists_items():
+def retrieve_all_bucketlists_items(bucketlist_id):
     """
     This accesses the global variable to be able to access the
     user object that contains user details and information.
 
     """
-    items = BucketListItem.query.filter(
-        BucketListItem.bucketlist_id == g.user.bucket_list.id).all()
+    items = BucketListItem.query.filter_by(bucketlist_id=bucketlist_id)
     return items
 # =================================================
 # UPDATE  bucket list and bucket list items
@@ -171,7 +181,7 @@ def update_bucketlist(data, bucketlist_id):
     bucketlist.title = title
     bucketlist.description = description
     update()
-    return {'bucketlist': bucketlist}
+    return bucketlist
 
 
 def update_bucket_list_item(data, item_id):

@@ -19,11 +19,16 @@ bucketlist_serializer = {
     'description': f.String,
     'date_created': f.DateTime(dt_format='rfc822'),
     'date_modified': f.DateTime(dt_format='rfc822'),
-    'created_by': f.Integer(attribute='user_id'),
+    'created_by': f.String(attribute='user.username'),
     'items': f.List(f.Nested(bucketlistitem_serializer)),
 }
 
 
 bucketlist_collection_serializer = {
     'bucketlists': f.List(f.Nested(bucketlist_serializer)),
+}
+
+bucketlist_item_collection_serializer = {
+    'bucketlist_items': f.List(f.Nested(bucketlistitem_serializer)),
+
 }

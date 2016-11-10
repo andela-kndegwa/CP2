@@ -8,7 +8,8 @@ from app.blister_api.actions import retrieve_particular_bucketlist_item
 from app.blister_api.actions import create_bucket_list_item
 from app.blister_api.actions import update_bucket_list_item
 from app.blister_api.actions import delete_bucket_list_item
-
+from app.blister_api.serializer import bucketlist_item_collection_serializer
+from app.blister_api.serializer import bucketlistitem_serializer
 
 class BucketListItemCollection(Resource):
     """
@@ -32,19 +33,20 @@ class BucketListItemCollection(Resource):
             'done', type=int, location='json')
         super(BucketListItemCollection, self).__init__()
 
-    @marshal_with(bucketlist_serializer)
+    @marshal_with(bucketlist_item_collection_serializer)
     def get(self, bucketlist_id=None, item_id=None):
+        if bucketlist_id and item_id:
+            item = retrieve_particular_bucketlist_item(bucketlist_id, item_id)
+            return {'bucketlist_items': item}, 200
         if bucketlist_id:
-            items = retrieve_particular_bucketlist_item(bucketlist_id)
-            return {'items': items}, 200
-        items = retrieve_all_bucketlists_items()
-        return {'items': items}, 200
+            items = retrieve_all_bucketlists_items(bucketlist_id)
+            return {'bucketlist_items': items}, 200
 
     @marshal_with(bucketlistitem_serializer)
     def post(self, bucketlist_id=None, item_id=None):
         data = self.item_parser.parse_args()
-        item = create_bucket_list_item(data)
-        return {'item': item}, 201
+        item = create_bucket_list_item(data, bucketlist_id)
+        return item, 201
 
     @marshal_with(bucketlist_serializer)
     def put(self, bucketlist_id=None, item_id=None):
