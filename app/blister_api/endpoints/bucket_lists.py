@@ -6,7 +6,7 @@ from app.blister_api.authentication import multi_auth
 from app.blister_api.serializer import bucketlist_serializer, bucketlist_collection_serializer
 from app.blister_api.actions import create_bucketlist, retrieve_all_bucketlists, retrieve_particular_bucketlist
 from app.blister_api.actions import update_bucketlist, delete_bucket_list
-
+from app.blister_api.utils import paginate
 
 class BucketListCollection(Resource):
     """
@@ -41,6 +41,7 @@ class BucketListCollection(Resource):
         return response, 201
 
     @marshal_with(bucketlist_serializer)
+    @paginate
     def get(self, id=None):
         if id:
             bucketlist = retrieve_particular_bucketlist(id)

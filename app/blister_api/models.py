@@ -15,7 +15,7 @@ class User(db.Model):
     who can be created or allowed to register and
     allowed to log in.
 
-    In Case one tries to access the password attirbute,
+    In Case one tries to access the password attribute,
     an non-readable attribute error is raised.
     """
     __tablename__ = 'users'
@@ -54,9 +54,10 @@ class User(db.Model):
     def generate_authentication_token(self, expires_in=3600):
         """
         Token Based authentication begins here.
-
-
         Arguments:
+        self.
+        expires_in: time value that is in seconds.
+
         """
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expires_in)
         return s.dumps({"id": self.id}).decode('utf-8')
@@ -68,13 +69,13 @@ class User(db.Model):
         A static method is used as a user will only
         be known after the token is decoded.
 
-        Raise the more specific ERROR for the None
+        If the 
         """
         s = Serializer(current_app.config["SECRET_KEY"])
         try:
             data = s.loads(token)
         except SignatureExpired:
-            """Valid but expired token. """
+            """Valid but expired token."""
             return None
         except BadSignature:
             """Invalid token """
@@ -87,7 +88,7 @@ class User(db.Model):
         user = User.query.filter_by(username=username).first()
         if user is None:
             # User does not exist
-            return 'Authentication failed.'
+            return 'Authentication failed. User does not exist.'
         if not user.verify_password(password):
             # Password verification failed
             return 'Authentication failed.'

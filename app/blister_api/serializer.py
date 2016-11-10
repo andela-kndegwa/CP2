@@ -23,8 +23,17 @@ bucketlist_serializer = {
     'items': f.List(f.Nested(bucketlistitem_serializer)),
 }
 
+pagination_fields = {
+    'page': f.Integer,
+    'number_of_pages': f.Integer,
+    'total': f.Integer,
+    'next': f.String,
+    'previous': f.String,
+}
+
 
 bucketlist_collection_serializer = {
+    'pagination': f.Nested(pagination_fields),
     'bucketlists': f.List(f.Nested(bucketlist_serializer)),
 }
 

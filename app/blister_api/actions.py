@@ -30,8 +30,16 @@ def update():
 
 def register_user(data):
     '''
-    data here is the JSON Object representing
-    the request sent with the URI
+    Parameters:
+    Data here is the JSON Object representing
+    the request sent with the URI.
+
+    Requires:
+    username and password to perform user registeration.
+
+    Returns:
+    The actual user with a 201 Success response for
+    the POST.
     '''
     username = data.get('username')
     password = data.get('password')
@@ -47,6 +55,17 @@ def register_user(data):
 
 def login_user(data):
     """
+    Parameters:
+    Data here is the JSON Object representing
+    the request sent with the URI with actual credentials
+    in the database.
+
+    Requires:
+    username and password to perform login.
+
+    Returns:
+    The user.
+    If the return is a message, it returns the error message.
 
     """
     username = data.get('username')
