@@ -1,5 +1,5 @@
 from flask import jsonify
-from flask_restful import Resource, reqparse, marshal_with
+from flask_restful import Resource, reqparse, marshal_with, abort
 
 
 from app.blister_api.authentication import multi_auth
@@ -40,13 +40,15 @@ class BucketListCollection(Resource):
         response = create_bucketlist(data)
         return response, 201
 
-    @marshal_with(bucketlist_serializer)
+    @marshal_with(bucketlist_collection_serializer)
     @paginate
     def get(self, id=None):
         if id:
             bucketlist = retrieve_particular_bucketlist(id)
             return bucketlist, 200
         bucketlists = retrieve_all_bucketlists()
+        if not bucketlists:
+            abort(404, message='There are no bucketlists at the moment.')
         return bucketlists, 200
 
     @marshal_with(bucketlist_serializer)

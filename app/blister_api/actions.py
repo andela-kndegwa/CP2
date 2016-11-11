@@ -101,7 +101,8 @@ def create_bucketlist(data):
     user_id = g.user.id
 
     bucket_list_title_exists = BucketList.query.filter_by(title=title).first()
-    current_user = BucketList.query.filter_by(user_id=user_id).first()
+    current_user = User.query.filter_by(id=user_id).first()
+    # import pdb;pdb.set_trace()
     if bucket_list_title_exists and current_user:
         abort(400, message='Two bucket lists cannot have the same title.')
     bucketlist = BucketList(title=title,
@@ -156,6 +157,9 @@ def retrieve_all_bucketlists():
     """
     bucketlists = BucketList.query.filter(
         BucketList.user_id == g.user.id).all()
+    # import pdb;pdb.set_trace()
+    # if not bucketlists:
+    #     abort(404, message='There are no bucketlists at the moment.')
     return bucketlists
 
 
@@ -244,3 +248,6 @@ def delete_bucket_list_item(bucketlist_id=None, item_id=None):
                                           bucketlist_id=bucketlist_id).first_or_404()
     delete(item)
     return ''
+
+# =================================================
+# SEARCH bucket list and bucket list items

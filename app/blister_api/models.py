@@ -69,17 +69,16 @@ class User(db.Model):
         A static method is used as a user will only
         be known after the token is decoded.
 
-        If the 
         """
         s = Serializer(current_app.config["SECRET_KEY"])
         try:
             data = s.loads(token)
         except SignatureExpired:
             """Valid but expired token."""
-            return None
+            return 'Valid BUT expired token returned.'
         except BadSignature:
             """Invalid token """
-            return None
+            return 'Bad Signature on token.'
         user_id = data['id']
         return user_id
 
@@ -91,7 +90,7 @@ class User(db.Model):
             return 'Authentication failed. User does not exist.'
         if not user.verify_password(password):
             # Password verification failed
-            return 'Authentication failed.'
+            return 'Authentication failed. Invalid login credentials.'
         return user
 
     def __repr__(self):
