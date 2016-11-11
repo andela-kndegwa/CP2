@@ -5,7 +5,7 @@ from app import create_app, db, api
 from app.blister_api.models import User
 from app.blister_api.endpoints.bucket_lists import BucketListCollection
 from app.blister_api.endpoints.items import BucketListItemCollection
-from app.blister_api.endpoints.register import RegisterUser
+from app.blister_api.endpoints.register import RegisterUser, Home
 from app.blister_api.endpoints.login import LoginUser
 
 # create the app
@@ -20,11 +20,6 @@ migrate = Migrate(app, db)
 # add.command.
 
 
-@app.route('/')
-def home():
-    return 'Welcome to blister!'
-
-
 def make_shell_context():
     return dict(User=User)
 
@@ -37,6 +32,7 @@ manager.add_command('db', MigrateCommand)
 
 
 if __name__ == '__main__':
+    api.add_resource(Home, '/', 'api/v1.0', endpoint='home')
     api.add_resource(RegisterUser, '/auth/register', endpoint='register')
     api.add_resource(LoginUser, '/auth/login', endpoint='login')
     api.add_resource(BucketListCollection,

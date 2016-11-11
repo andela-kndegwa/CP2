@@ -5,6 +5,9 @@ from base64 import b64encode
 def send_post(test_client, url, body, headers=None):
     response = test_client.post(url, data=json.dumps(body), headers=headers,
                                 content_type="application/json")
+    # print(response.headers)
+    # print(response.json)
+    # print(response.data)
     return response
 
 
@@ -29,7 +32,7 @@ def post_a_bucketlist(test_client, token):
 
 def authorization_header(token):
     headers = {
-        'Authorization': 'Basic ' + (b64encode((token + ':unused')
+        'Authorization': 'Bearer ' + (b64encode((token + ':unused')
                                                .encode('utf-8'))
                                      .decode('utf-8'))
     }

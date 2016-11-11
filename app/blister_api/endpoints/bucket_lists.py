@@ -48,15 +48,15 @@ class BucketListCollection(Resource):
             bucketlist = retrieve_particular_bucketlist(id)
             return bucketlist, 200
         bucketlists = retrieve_all_bucketlists()
-        q = request.args.get('q')
-        if q:
-            bucketlists = search_bucket_list(q)
+        if not bucketlists:
+            abort(404, message='There are no bucketlists at the moment.')
+        query = request.args.get('query')
+        if query:
+            bucketlists = search_bucket_list(query)
             if not bucketlists:
                 abort(404, message='That bucketlist does not exist.')
             else:
                 return bucketlists, 200
-        if not bucketlists:
-            abort(404, message='There are no bucketlists at the moment.')
         return bucketlists, 200
 
     @marshal_with(bucketlist_serializer)

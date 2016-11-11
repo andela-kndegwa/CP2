@@ -1,11 +1,9 @@
-from flask import g, request
+from flask import g
 from flask_restful import abort
 
 from app import db
 from models import BucketListItem, User, BucketList
-from app.blister_api.serializer import bucketlist_serializer, \
-    bucketlist_item_collection_serializer, \
-    bucketlistitem_serializer
+
 
 # Database save, delete and update functionality.
 
@@ -102,7 +100,6 @@ def create_bucketlist(data):
 
     bucket_list_title_exists = BucketList.query.filter_by(title=title).first()
     current_user = User.query.filter_by(id=user_id).first()
-    # import pdb;pdb.set_trace()
     if bucket_list_title_exists and current_user:
         abort(400, message='Two bucket lists cannot have the same title.')
     bucketlist = BucketList(title=title,
@@ -111,8 +108,6 @@ def create_bucketlist(data):
     g.user.bucketlists.append(bucketlist)
     save(bucketlist)
     return bucketlist
-    # response = marshal(bucketlist, bucketlist_serializer)
-    # return response
 
 
 def create_bucket_list_item(data, bucketlist_id):
@@ -125,8 +120,8 @@ def create_bucket_list_item(data, bucketlist_id):
     'description': Extra description for the item
     'bucket': 'String' value highlighting the particular bucket list
 
-
-    POST THE ACTUAL NAME OF THE PERSON WHO CREATED THE BUCKET LIST
+    In case the bucket list does not belong to a user,
+    an error message is returned.
     '''
     if not data:
         abort(400, 'Please add information for your bucketlist.')
@@ -157,9 +152,6 @@ def retrieve_all_bucketlists():
     """
     bucketlists = BucketList.query.filter(
         BucketList.user_id == g.user.id).all()
-    # import pdb;pdb.set_trace()
-    # if not bucketlists:
-    #     abort(404, message='There are no bucketlists at the moment.')
     return bucketlists
 
 
@@ -175,10 +167,9 @@ def retrieve_particular_bucketlist(bucketlist_id):
     return bucketlist
 
 
-def search_bucket_list(q):
-    # q = request.args.get('q')
-    # import pdb;pdb.set_trace()
-    bucketlists = g.user.bucketlists.filter(BucketList.title.contains(q)).all()
+def search_bucket_list(query):
+    bucketlists = g.user.bucketlists\
+        .filter(BucketList.title.contains(query)).all()
     return bucketlists
 
 
@@ -211,7 +202,6 @@ def retrieve_all_bucketlists_items(bucketlist_id):
 
 
 def update_bucketlist(data, bucketlist_id):
-    # import pdb;pdb.set_trace()
     if not data:
         abort(400, 'Please add information for your bucketlist.')
     bucketlist = BucketList.query.filter_by(id=bucketlist_id,

@@ -60,7 +60,7 @@ class TestUserModelFunctionality(unittest.TestCase):
         Error Message ---> Incorrect password
         """
         res = User.query_user('mrkimani', 'password')
-        self.assertEquals(res, 'Incorrect password')
+        self.assertEquals(res, 'Authentication failed. Invalid login credentials.')
 
     def test_verification_token_expiry(self):
         """
@@ -69,9 +69,9 @@ class TestUserModelFunctionality(unittest.TestCase):
         None ---> if SignatureExpired
         OK ---> if within time
         """
-        app_token = self.user.generate_authentication_token(expiration=0.3)
+        app_token = self.user.generate_authentication_token(expires_in=0.3)
         time.sleep(1)
-        self.assertIsNone(self.user.verify_auth_token(app_token))
+        self.assertEquals(self.user.verify_auth_token(app_token), 'Valid BUT expired token returned.')
 
     def test_query_user_from_test_database_if_user_non_existent(self):
         """
@@ -82,7 +82,7 @@ class TestUserModelFunctionality(unittest.TestCase):
         Error Message ---> User does not exist
         """
         res = User.query_user('mrskimani', 'password')
-        self.assertEquals(res, 'User does not exist')
+        self.assertEquals(res, 'Authentication failed. User does not exist.')
 
     def test_query_user_from_test_database_if_details_ok(self):
         """
@@ -107,7 +107,7 @@ class TestUserModelFunctionality(unittest.TestCase):
         rejected.
         """
         fake_key = 'ANY_THING_APART_FROM_THE_SECRET_KEY'
-        self.assertFalse(User.verify_auth_token(fake_key))
+        self.assertEquals(User.verify_auth_token(fake_key), 'Bad Signature on token.')
 
     def tearDown(self):
         db.drop_all()
