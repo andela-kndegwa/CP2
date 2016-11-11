@@ -21,6 +21,7 @@ def verify_password(username, password):
 
 @token_auth.verify_token
 def verify_token(token):
+    # import pdb;pdb.set_trace()
     user_id = User.verify_auth_token(token)
     if user_id:
         g.user = User.query.filter_by(id=user_id).first()

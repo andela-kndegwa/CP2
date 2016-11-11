@@ -7,8 +7,6 @@ from app.blister_api.endpoints.bucket_lists import BucketListCollection
 from app.blister_api.endpoints.items import BucketListItemCollection
 from app.blister_api.endpoints.register import RegisterUser
 from app.blister_api.endpoints.login import LoginUser
-# from app.blister_api.endpoints.register_user import ns as register_namespace
-# from app.blister_api.endpoints.login_user import ns as login_namespace
 
 # create the app
 app = create_app('development')
@@ -41,10 +39,13 @@ manager.add_command('db', MigrateCommand)
 if __name__ == '__main__':
     api.add_resource(RegisterUser, '/auth/register', endpoint='register')
     api.add_resource(LoginUser, '/auth/login', endpoint='login')
-    api.add_resource(BucketListCollection, '/bucketlists','/bucketlists/<int:id>',
-    				'/bucketlists/<int:id>/',
+    api.add_resource(BucketListCollection,
+                     '/bucketlists',
+                     '/bucketlists/<int:id>',
+                     '/bucketlists/<int:id>/',
                      endpoint='bucketlists')
-    api.add_resource(BucketListItemCollection, '/bucketlists/<int:bucketlist_id>/items',
+    api.add_resource(BucketListItemCollection,
+                     '/bucketlists/<int:bucketlist_id>/items',
                      '/bucketlists/<int:bucketlist_id>/items/<int:item_id>')
 
     manager.run()

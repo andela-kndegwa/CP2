@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, request
 from flask_restful import Resource, reqparse, marshal_with, abort
 
 
@@ -7,6 +7,7 @@ from app.blister_api.serializer import bucketlist_serializer, bucketlist_collect
 from app.blister_api.actions import create_bucketlist, retrieve_all_bucketlists, retrieve_particular_bucketlist
 from app.blister_api.actions import update_bucketlist, delete_bucket_list
 from app.blister_api.utils import paginate
+from app.blister_api.actions import search_bucket_list
 
 class BucketListCollection(Resource):
     """
@@ -47,6 +48,13 @@ class BucketListCollection(Resource):
             bucketlist = retrieve_particular_bucketlist(id)
             return bucketlist, 200
         bucketlists = retrieve_all_bucketlists()
+        q = request.args.get('q')
+        if q:
+            bucketlists = search_bucket_list(q)
+            if not bucketlists:
+                abort(404, message='That bucketlist does not exist.')
+            else:
+                return bucketlists, 200
         if not bucketlists:
             abort(404, message='There are no bucketlists at the moment.')
         return bucketlists, 200

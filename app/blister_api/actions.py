@@ -1,5 +1,5 @@
-from flask import g
-from flask_restful import abort, marshal
+from flask import g, request
+from flask_restful import abort
 
 from app import db
 from models import BucketListItem, User, BucketList
@@ -173,6 +173,13 @@ def retrieve_particular_bucketlist(bucketlist_id):
                      message="Unauthorized access." +
                      "You do not own that bucket list.")
     return bucketlist
+
+
+def search_bucket_list(q):
+    # q = request.args.get('q')
+    # import pdb;pdb.set_trace()
+    bucketlists = g.user.bucketlists.filter(BucketList.title.contains(q)).all()
+    return bucketlists
 
 
 def retrieve_particular_bucketlist_item(bucketlist_id, item_id):
