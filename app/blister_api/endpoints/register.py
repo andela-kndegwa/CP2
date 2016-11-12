@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+
 from app.blister_api.actions import register_user
 
 

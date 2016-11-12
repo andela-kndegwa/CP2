@@ -90,9 +90,9 @@ def create_bucketlist(data):
     Description : Description of the bucket list.
     """
     if not data:
-        abort(400, 'Please add information for your bucketlist.')
+        abort(400, message='Please add information for your bucketlist.')
     if not data.get('title'):
-        abort(400, 'Please provide a title for your bucketlist')
+        abort(400, message='Please provide a title for your bucketlist')
 
     title = data.get('title')
     description = data.get('description')
@@ -124,9 +124,9 @@ def create_bucket_list_item(data, bucketlist_id):
     an error message is returned.
     '''
     if not data:
-        abort(400, 'Please add information for your bucketlist.')
+        abort(400, message='Please add information for your bucketlist.')
     if not data.get('title'):
-        abort(400, 'Please provide a title for your bucketlist')
+        abort(400, message='Please provide a title for your bucketlist')
     title = data.get('title')
     description = data.get('description')
     bucketlist = BucketList.query.filter_by(id=bucketlist_id).first()
@@ -205,7 +205,7 @@ def update_bucketlist(data, bucketlist_id):
     if not data:
         abort(400, 'Please add information for your bucketlist.')
     bucketlist = BucketList.query.filter_by(id=bucketlist_id,
-                                            user_id=g.user.id).first_or_404()
+                                            user_id=g.user.id).first()
     if not bucketlist:
         abort(404, 'Bucket list not found.')
     title = data.get('title', bucketlist.title)

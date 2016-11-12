@@ -14,6 +14,19 @@ from app.blister_api.endpoints.register import RegisterUser, Home
 import base_setup
 
 
+def authorization_header(token):
+    headers = {
+        'Authorization': 'Bearer ' + token
+    }
+    return headers
+
+
+# def login_test_user(blister, body):
+#     url = base_url + '/auth/login'
+#     response = blister.post(url, data=json.dumps(body),
+#                             content_type='application/json')
+#     return response
+
 base_url = '/api/v1.0'
 
 
@@ -39,9 +52,18 @@ class TestEndpointsClass(TestCase):
             "username": "alexmagana",
             "password": "safari"
         }
-        # self.test_client = self.create_app().test_client()
-        # self.response = base_setup.send_post(self.test_client, base_url + '/auth/register/',
-        #                                      self.body)
+        url = base_url + '/auth/register'
+        self.response = self.blister.post(url, data=json.dumps(self.body),
+                                          content_type="application/json")
+
+        login_url = base_url + '/auth/login'
+        self.login_response = self.blister.post(login_url, data=json.dumps(self.body),
+                                                content_type="application/json")
+        # Login credentials
+        self.response_json = json.loads(
+            self.login_response.data.decode('utf-8'))
+        self.token = self.response_json['token']
+        self.headers = authorization_header(self.token)
 
     def test_home_blueprint_message(self):
         '''
@@ -70,33 +92,118 @@ class TestEndpointsClass(TestCase):
 
     # ======================================================
     # Tests user Login and Register functionality.
-    def test_create_user_works(self):
+    def test_username_and_password_required_to_register(self):
+        self.body = {}
+        self.body['username'] = ''
+        self.body['password'] = ''
+        url = base_url + '/auth/register'
+        response = self.blister.post(url, data=json.dumps(self.body),
+                                     content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Please enter a username and password to register.',
+                      response.data.decode('utf-8'))
+
+    def test_register_user_works(self):
         '''
         Arguments:
         Self---> itsa class method
 
         Returns:
         201 As it is a post request.
-        '''
-        url = base_url + '/auth/register'
-        response = self.blister.post(url, data=json.dumps(self.body),
-                                     content_type="application/json")
-        self.assertEqual(response.status_code, 201)
-        self.assertIn('Sign Up successful.', response.data.decode('utf-8'))
 
-    def test_username_and_password_required_to_register(self):
+        It is tied to the self.response that relates to this
+        class because a user should be able to register with
+        the self.body credentials.
+        '''
+        self.assertEqual(self.response.status_code, 201)
+        self.assertIn('Sign Up successful.',
+                      self.response.data.decode('utf-8'))
+
+    def test_username_and_password_required_to_login(self):
         self.body = {}
         self.body['username'] = ''
-        self.body['password'] = 'pass'
-        url = base_url + '/auth/register'
+        self.body['password'] = ''
+        url = base_url + '/auth/login'
         response = self.blister.post(url, data=json.dumps(self.body),
                                      content_type="application/json")
         self.assertEqual(response.status_code, 400)
-        # self.assertIn('Please enter a username and password to register.', response.data.decode('utf-8'))
+        self.assertIn('Please enter a username and password to log in.',
+                      response.data.decode('utf-8'))
 
-        # response_json = json.loads(self.response.data.decode('utf-8'))
-        # self.assertEqual(self.response.status_code, 400)
-        # self.assertIn('message', response_json)
+    def test_invalid_credentials_are_caught_works(self):
+        '''
+        Arguments:
+        Self---> It is a class method
+
+        Returns:
+        401 As it is an unauthorized access request
+        '''
+        self.body = {}
+        self.body['username'] = 'alexmagana'
+        self.body['password'] = 'wrongpassword'
+        url = base_url + '/auth/login'
+        response = self.blister.post(url, data=json.dumps(self.body),
+                                     content_type="application/json")
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            'Authentication failed. Invalid login credentials.',
+            response.data.decode('utf-8'))
+
+    def test_login_works(self):
+        '''
+        Arguments:
+        Self---> It is a class method
+
+        Returns:
+        201 As it is a post request.
+        '''
+        url = base_url + '/auth/login'
+        response = self.blister.post(url, data=json.dumps(self.body),
+                                     content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('token', response.data.decode('utf-8'))
+    # ======================================================
+    # Tests user Buckelist Resource functionality.
+
+    def test_get_when_there_are_no_bucketlists(self):
+        url = base_url + '/bucketlists'
+        response = self.blister.get(url, headers=self.headers)
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('You have no bucketlists at the moment.',
+                      response.data.decode('utf-8'))
+
+    def test_create_bucketlist(self):
+        url = base_url + '/bucketlists'
+        body = {
+            'title': 'Perform at the grammies',
+            'description': 'Joel Ortiz'
+        }
+        response = self.blister.post(url, headers=self.headers,
+                                     data=json.dumps(body),
+                                     content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('Joel Ortiz', response.data.decode('utf-8'))
+
+    def test_update_bucketlist(self):
+        post_url = base_url + '/bucketlists'
+        post_body = {
+            'title': 'Perform at the grammies',
+            'description': 'Joel Ortiz'
+        }
+        response = self.blister.post(post_url, headers=self.headers,
+                                     data=json.dumps(post_body),
+                                     content_type='application/json')
+        put_url = base_url + '/bucketlists/1'
+        put_body = {
+            'description': 'Kendrick Lamar'
+        }
+        response = self.blister.put(put_url, headers=self.headers,
+                                    data=json.dumps(put_body),
+                                    content_type='application/json')
+        # self.assertEqual(response.status_code, 200)
+        self.assertNotIn('Joel Ortiz', response.data.decode('utf-8'))
+        self.assertIn('Kendrick Lamar',response.data.decode('utf-8')) 
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         db.session.remove()

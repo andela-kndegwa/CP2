@@ -24,7 +24,6 @@ class BucketListCollection(Resource):
     def __init__(self):
         self.bucket_list_parser = reqparse.RequestParser()
         self.bucket_list_parser.add_argument('title', type=str,
-                                             required=True,
                                              help='Please provide a title for your bucketlist.',
                                              location='json')
         self.bucket_list_parser.add_argument(
@@ -44,12 +43,13 @@ class BucketListCollection(Resource):
     @marshal_with(bucketlist_collection_serializer)
     @paginate
     def get(self, id=None):
+        # import pdb;pdb.set_trace()
         if id:
             bucketlist = retrieve_particular_bucketlist(id)
             return bucketlist, 200
         bucketlists = retrieve_all_bucketlists()
         if not bucketlists:
-            abort(404, message='There are no bucketlists at the moment.')
+            abort(404, message='You have no bucketlists at the moment.')
         query = request.args.get('query')
         if query:
             bucketlists = search_bucket_list(query)

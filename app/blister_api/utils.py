@@ -1,7 +1,10 @@
-from flask import url_for, current_app,g
 from functools import wraps
+
+
+from flask import url_for, current_app, g
 from flask import request
 from flask_restful import abort
+
 from app.blister_api.models import BucketList
 
 
@@ -15,7 +18,8 @@ def paginate(f):
                                      type=int),
                     current_app.config['MAX_PER_PAGE'])
         q = request.args.get('q')
-        page_bucketlist = BucketList.query.filter(BucketList.user_id == g.user.id)
+        page_bucketlist = BucketList.query.filter(
+            BucketList.user_id == g.user.id)
         page_bucketlist = page_bucketlist.paginate(page=page, per_page=limit)
         bucketlists = page_bucketlist.items
         if not bucketlists:
