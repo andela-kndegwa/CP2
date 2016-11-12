@@ -18,9 +18,9 @@ def paginate(f):
                                      current_app.config['DEFAULT_PER_PAGE'],
                                      type=int),
                     current_app.config['MAX_PER_PAGE'])
-        query = request.args.get('query')
-        if query:
-            bucketlists = search_bucket_list(query)
+        q = request.args.get('q')
+        if q:
+            bucketlists = search_bucket_list(q)
             if not bucketlists:
                 abort(404, message='That bucketlist does not exist.')
             else:
@@ -40,12 +40,12 @@ def paginate(f):
             pagination['next'] = url_for(endpoint=request.endpoint,
                                          limit=limit,
                                          page=page_bucketlist.next_num,
-                                         _method='GET', query=query, _external=True,
+                                         _method='GET', q=q, _external=True,
                                          **kwargs)
         if page_bucketlist.has_prev:
             pagination['previous'] = url_for(endpoint=request.endpoint,
                                              limit=limit, page=page_bucketlist
-                                             .prev_num, query=query, _method='GET',
+                                             .prev_num, q=q, _method='GET',
                                              _external=True, **kwargs)
         return {'bucketlists': bucketlists, 'pagination': pagination}, 200
     return func_wrapper

@@ -178,6 +178,28 @@ class TestEndpointsClass(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn('Joel Ortiz', response.data.decode('utf-8'))
 
+    def test_create_bucketlist_with_same_title(self):
+        url = base_url + '/bucketlists'
+        body = {
+            'title': 'Perform at the grammies',
+            'description': 'Joel Ortiz'
+        }
+        self.blister.post(url, headers=self.headers,
+                          data=json.dumps(body),
+                          content_type='application/json')
+
+        body = {
+            'title': 'Perform at the grammies',
+            'description': 'Khaligraph Jones'
+        }
+
+        response = self.blister.post(url, headers=self.headers,
+                                     data=json.dumps(body),
+                                     content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Two bucket lists cannot have the same title.',
+                      response.data.decode('utf-8'))
+
     def test_update_bucketlist(self):
         post_url = base_url + '/bucketlists'
         post_body = {
@@ -251,6 +273,22 @@ class TestEndpointsClass(TestCase):
                                      content_type='application/json')
         self.assertEqual(response.status_code, 201)
         self.assertIn('Dance with the stars', response.data.decode('utf-8'))
+
+    def test_create_bucketlist_item_with_no_data(self):
+        url = base_url + '/bucketlists'
+        body = {
+            'title': 'Today Land',
+            'description': 'Kick it with them Ninjas down the block.'
+        }
+        self.blister.post(url, headers=self.headers,
+                          data=json.dumps(body),
+                          content_type='application/json')
+        post_item_url = url + '/1/items'
+        item_body = {}
+        response = self.blister.post(post_item_url, headers=self.headers,
+                                     data=json.dumps(item_body),
+                                     content_type='application/json')
+        self.assertEqual(response.status_code, 400)
 
     def test_update_bucketlist_item(self):
         url = base_url + '/bucketlists'

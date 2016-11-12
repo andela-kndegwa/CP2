@@ -124,9 +124,9 @@ def create_bucket_list_item(data, bucketlist_id):
     an error message is returned.
     '''
     if not data:
-        abort(400, message='Please add information for your bucketlist.')
+        abort(400, message='Please add information for your bucketlist item.')
     if not data.get('title'):
-        abort(400, message='Please provide a title for your bucketlist')
+        abort(400, message='Please provide a title for your bucketlist item')
     title = data.get('title')
     description = data.get('description')
     bucketlist = BucketList.query.filter_by(id=bucketlist_id).first()
