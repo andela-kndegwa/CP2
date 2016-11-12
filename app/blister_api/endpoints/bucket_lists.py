@@ -1,13 +1,16 @@
-from flask import jsonify, request
+from flask import request
 from flask_restful import Resource, reqparse, marshal_with, abort
 
 
 from app.blister_api.authentication import multi_auth
-from app.blister_api.serializer import bucketlist_serializer, bucketlist_collection_serializer
-from app.blister_api.actions import create_bucketlist, retrieve_all_bucketlists, retrieve_particular_bucketlist
-from app.blister_api.actions import update_bucketlist, delete_bucket_list
+from app.blister_api.serializer import bucketlist_serializer, \
+    bucketlist_collection_serializer
+from app.blister_api.actions import search_bucket_list, \
+    update_bucketlist, delete_bucket_list, create_bucketlist, \
+    retrieve_all_bucketlists, \
+    retrieve_particular_bucketlist
 from app.blister_api.utils import paginate
-from app.blister_api.actions import search_bucket_list
+
 
 class BucketListCollection(Resource):
     """
@@ -42,11 +45,7 @@ class BucketListCollection(Resource):
 
     @marshal_with(bucketlist_collection_serializer)
     @paginate
-    def get(self, id=None):
-        # import pdb;pdb.set_trace()
-        if id:
-            bucketlist = retrieve_particular_bucketlist(id)
-            return bucketlist, 200
+    def get(self):
         bucketlists = retrieve_all_bucketlists()
         if not bucketlists:
             abort(404, message='You have no bucketlists at the moment.')
@@ -58,6 +57,27 @@ class BucketListCollection(Resource):
             else:
                 return bucketlists, 200
         return bucketlists, 200
+
+
+class SingleBucketList(Resource):
+    def __init__(self):
+        self.bucket_list_parser = reqparse.RequestParser()
+        self.bucket_list_parser.add_argument('title', type=str,
+                                             location='json')
+        self.bucket_list_parser.add_argument(
+            'description', type=str, location='json')
+        self.bucket_list_parser.add_argument(
+            'Authorization', location='headers')
+        super(SingleBucketList, self).__init__()
+    decorators = [multi_auth.login_required]
+
+    @marshal_with(bucketlist_serializer)
+    def get(self, id=None):
+        if id:
+            bucketlist = retrieve_particular_bucketlist(id)
+            if not bucketlist:
+                abort(404, message='That bucketlist does not exist.')
+            return bucketlist, 200
 
     @marshal_with(bucketlist_serializer)
     def put(self, id):

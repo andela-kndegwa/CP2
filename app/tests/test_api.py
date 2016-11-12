@@ -1,17 +1,15 @@
-import simplejson
 import json
 from flask_testing import TestCase
+
 from app import create_app, db, api
-from app.blister_api.models import User, BucketList, BucketListItem
-from app.blister_api.endpoints.bucket_lists import BucketListCollection
-from app.blister_api.endpoints.items import BucketListItemCollection
+from app.blister_api.endpoints.bucket_lists import BucketListCollection,\
+    SingleBucketList
+
+from app.blister_api.endpoints.items import BucketListItemCollection, \
+    SingleBucketListItem
+
 from app.blister_api.endpoints.login import LoginUser
 from app.blister_api.endpoints.register import RegisterUser, Home
-
-# from app.blister_api.endpoints.register_user import ns as register_namespace
-# from app.blister_api.endpoints.login_user import ns as login_namespace
-
-import base_setup
 
 
 def authorization_header(token):
@@ -20,12 +18,6 @@ def authorization_header(token):
     }
     return headers
 
-
-# def login_test_user(blister, body):
-#     url = base_url + '/auth/login'
-#     response = blister.post(url, data=json.dumps(body),
-#                             content_type='application/json')
-#     return response
 
 base_url = '/api/v1.0'
 
@@ -37,16 +29,18 @@ class TestEndpointsClass(TestCase):
     def setUp(self):
         self.blister = self.create_app().test_client()
         db.create_all()
-        api.add_resource(Home, '/', base_url)
+        api.add_resource(Home, '/', 'api/v1.0', endpoint='home')
         api.add_resource(RegisterUser, '/auth/register', endpoint='register')
         api.add_resource(LoginUser, '/auth/login', endpoint='login')
-        api.add_resource(BucketListCollection,
-                         '/bucketlists',
-                         '/bucketlists/<int:id>',
-                         '/bucketlists/<int:id>/',
+
+        api.add_resource(BucketListCollection, '/bucketlists',
                          endpoint='bucketlists')
+        api.add_resource(SingleBucketList, '/bucketlists/<int:id>')
+
         api.add_resource(BucketListItemCollection,
-                         '/bucketlists/<int:bucketlist_id>/items',
+                         '/bucketlists/<int:bucketlist_id>/items')
+
+        api.add_resource(SingleBucketListItem,
                          '/bucketlists/<int:bucketlist_id>/items/<int:item_id>')
         self.body = {
             "username": "alexmagana",
@@ -163,7 +157,7 @@ class TestEndpointsClass(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn('token', response.data.decode('utf-8'))
     # ======================================================
-    # Tests user Buckelist Resource functionality.
+    # Tests Buckelist Resource functionality.
 
     def test_get_when_there_are_no_bucketlists(self):
         url = base_url + '/bucketlists'
@@ -202,77 +196,116 @@ class TestEndpointsClass(TestCase):
                                     content_type='application/json')
         # self.assertEqual(response.status_code, 200)
         self.assertNotIn('Joel Ortiz', response.data.decode('utf-8'))
-        self.assertIn('Kendrick Lamar',response.data.decode('utf-8')) 
+        self.assertIn('Kendrick Lamar', response.data.decode('utf-8'))
         self.assertEqual(response.status_code, 200)
+
+    def test_delete_bucketlist(self):
+        post_url = base_url + '/bucketlists'
+        post_body = {
+            'title': 'Perform at the grammies',
+            'description': 'Joel Ortiz'
+        }
+        response = self.blister.post(post_url, headers=self.headers,
+                                     data=json.dumps(post_body),
+                                     content_type='application/json')
+        delete_url = base_url + '/bucketlists/1'
+        response = self.blister.delete(delete_url, headers=self.headers,
+                                       content_type='application/json')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.data, '')
+    # ======================================================
+    # Tests Buckelist Item Resource functionality.
+
+    def test_message_when_no_items_in_bucketlist(self):
+        url = base_url + '/bucketlists'
+        body = {
+            'title': 'Tomorrow Land',
+            'description': 'Kick it with them Ninjas down the block.'
+        }
+        response = self.blister.post(url, headers=self.headers,
+                                     data=json.dumps(body),
+                                     content_type='application/json')
+        get_items_url = url + '/1/items'
+        response = self.blister.get(get_items_url, headers=self.headers)
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('This bucket list has no items at the moment.',
+                      response.data.decode('utf-8'))
+
+    def test_create_bucketlist_item(self):
+        url = base_url + '/bucketlists'
+        body = {
+            'title': 'Tomorrow Land',
+            'description': 'Kick it with them Ninjas down the block.'
+        }
+        self.blister.post(url, headers=self.headers,
+                          data=json.dumps(body),
+                          content_type='application/json')
+        post_item_url = url + '/1/items'
+        item_body = {
+            'title': 'Dance with the stars',
+            'description': 'Tiesto bumping that loud'
+        }
+
+        response = self.blister.post(post_item_url, headers=self.headers,
+                                     data=json.dumps(item_body),
+                                     content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('Dance with the stars', response.data.decode('utf-8'))
+
+    def test_update_bucketlist_item(self):
+        url = base_url + '/bucketlists'
+        body = {
+            'title': 'Jump of a cliff',
+            'description': 'With a strap attached offcourse!'
+        }
+        self.blister.post(url, headers=self.headers,
+                          data=json.dumps(body),
+                          content_type='application/json')
+        post_item_url = url + '/1/items'
+        item_body = {
+            'title': 'Himalayas',
+            'description': 'Like a boss'
+        }
+
+        self.blister.post(post_item_url, headers=self.headers,
+                          data=json.dumps(item_body),
+                          content_type='application/json')
+
+        put_item_url = url + '/1/items/1'
+        put_body = {
+            'description': 'Unlike Rick Ross'
+        }
+        response = self.blister.put(put_item_url, headers=self.headers,
+                                    data=json.dumps(put_body),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('Like a boss', response.data.decode('utf-8'))
+
+    def test_delete_bucketlist_item(self):
+        url = base_url + '/bucketlists'
+        body = {
+            'title': 'Will work with Wale',
+            'description': 'DC All day. NO days off.'
+        }
+        self.blister.post(url, headers=self.headers,
+                          data=json.dumps(body),
+                          content_type='application/json')
+        post_item_url = url + '/1/items'
+        item_body = {
+            'title': 'L.A Studios DC',
+            'description': 'Have some good times.'
+        }
+
+        self.blister.post(post_item_url, headers=self.headers,
+                          data=json.dumps(item_body),
+                          content_type='application/json')
+
+        delete_item_url = url + '/1/items/1'
+        response = self.blister.delete(delete_item_url, headers=self.headers,
+                                       content_type='application/json')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.data, '')
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-
-
-# class TestAuthentication(TestCase):
-
-#     def create_app(self):
-#         app = create_app('testing')
-#         return app
-
-#     def setUp(self):
-#         db.create_all()
-#         api.add_resource(Home, '/', base_url)
-#         api.add_resource(RegisterUser, '/auth/register', endpoint='register')
-#         api.add_resource(LoginUser, '/auth/login', endpoint='login')
-#         api.add_resource(BucketListCollection,
-#                          '/bucketlists',
-#                          '/bucketlists/<int:id>',
-#                          '/bucketlists/<int:id>/',
-#                          endpoint='bucketlists')
-#         api.add_resource(BucketListItemCollection,
-#                          '/bucketlists/<int:bucketlist_id>/items',
-#                          '/bucketlists/<int:bucketlist_id>/items/<int:item_id>')
-
-#         self.body = {"username": "alexmagana",
-#                      "password": "safari"}
-#         self.test_client = self.create_app().test_client()
-#         self.response = base_setup.send_post(self.test_client, base_url + '/auth/register',
-#                                              self.body)
-#         # print(self.response.headers)
-#         # print(self.response.json)
-#         print(self.response.data)
-
-#     def test_create_user_works(self):
-#         url = base_url + '/auth/register'
-#         response = self.test_client.post(url,
-#                                          data=self.body)
-#         print(response.headers)
-#         # print(response.text)
-#         print(response.data)
-#         response_json = json.loads(response.data.decode('utf-8'))
-#         self.assertEqual(self.response.status_code, 201)
-#         self.assertIn('token', response_json)
-
-    # def test_create_user_username_required(self):
-    #     response_json = json.loads(self.response.data.decode('utf-8'))
-    #     self.assertEqual(self.response.status_code, 400)
-    #     self.assertIn('message', response_json)
-
-    # def test_user_exist(self):
-    #     second_response = base_setup.send_post(
-    #         self.test_client, '/v1.0/auth/register', self.body)
-    #     response_json = json.loads(second_response.data.decode('utf-8'))
-    #     self.assertEqual(second_response.status_code, 400)
-
-    # def test_login(self):
-    #     response = base_setup.send_post(
-    #         self.test_client, '/v1.0/auth/login', self.body)
-    #     response_json = json.loads(response.data.decode('utf-8'))
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIn('token', response_json)
-
-    # def test_login_fail(self):
-    #     body = {
-    #         "username": "alexmagana",
-    #         "password": "nothispassword"
-    #     }
-    #     response = base_setup.send_post(
-    #         self.test_client, '/v1.0/auth/login', body)
-    #     self.assertEqual(response.status_code, 400)

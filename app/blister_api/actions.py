@@ -195,7 +195,7 @@ def retrieve_all_bucketlists_items(bucketlist_id):
         return abort(401,
                      message="Unauthorized access." +
                      "You do not own that bucket list.")
-    items = BucketListItem.query.filter_by(bucketlist_id=bucketlist_id)
+    items = BucketListItem.query.filter_by(bucketlist_id=bucketlist_id).all()
     return items
 # =================================================
 # UPDATE  bucket list and bucket list items
