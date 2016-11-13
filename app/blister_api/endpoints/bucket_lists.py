@@ -49,9 +49,9 @@ class BucketListCollection(Resource):
         bucketlists = retrieve_all_bucketlists()
         if not bucketlists:
             abort(404, message='You have no bucketlists at the moment.')
-        query = request.args.get('query')
-        if query:
-            bucketlists = search_bucket_list(query)
+        q = request.args.get('q')
+        if q:
+            bucketlists = search_bucket_list(q)
             if not bucketlists:
                 abort(404, message='That bucketlist does not exist.')
             else:

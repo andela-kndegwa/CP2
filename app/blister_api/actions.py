@@ -123,6 +123,10 @@ def create_bucket_list_item(data, bucketlist_id):
     In case the bucket list does not belong to a user,
     an error message is returned.
     '''
+    bucketlists = BucketList.query.filter(
+        BucketList.user_id == g.user.id).all()
+    if not bucketlists:
+        abort(400, message='Please create a bucketlist before adding an item.')
     if not data:
         abort(400, message='Please add information for your bucketlist item.')
     if not data.get('title'):
@@ -203,11 +207,11 @@ def retrieve_all_bucketlists_items(bucketlist_id):
 
 def update_bucketlist(data, bucketlist_id):
     if not data:
-        abort(400, 'Please add information for your bucketlist.')
+        abort(400, message='Please add information for your bucketlist.')
     bucketlist = BucketList.query.filter_by(id=bucketlist_id,
                                             user_id=g.user.id).first()
     if not bucketlist:
-        abort(404, 'Bucket list not found.')
+        abort(404, message='Bucket list not found.')
     title = data.get('title', bucketlist.title)
     description = data.get('description', bucketlist.description)
     bucketlist.title = title
@@ -245,6 +249,3 @@ def delete_bucket_list_item(bucketlist_id=None, item_id=None):
                                           bucketlist_id=bucketlist_id).first_or_404()
     delete(item)
     return ''
-
-# =================================================
-# SEARCH bucket list and bucket list items

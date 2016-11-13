@@ -102,7 +102,7 @@ As highlighted earlier, install the **Google Chrome** extension [Postman](https:
 
 Once your up and running with postman, the following steps should get your acquainted with how blister works:
 
-1. Register a user.
+- **Register a user.**
 
 Copy the localhost link plus the **api/v1.0/auth/register** appended to the tail end of the link. i.e:
 **http://12.0.0.1:5000/api/v1.0/auth/register**
@@ -117,4 +117,174 @@ Copy the localhost link plus the **api/v1.0/auth/register** appended to the tail
 
 ![Demo Image](/docs/img/1.png?raw=true)
 
+A successful registeration should return the message:
 
+```Sign Up successful. Please log in.```
+
+- **Login a user.**
+
+This time the link changes to:
+**http://12.0.0.1:5000/api/v1.0/auth/login**
+
+- Ensure that the method is a POST request also and log in with the same credentials used to sign up.
+
+```{"username":"demouser", "password":"pass"}```
+
+![Demo Image](/docs/img/2.png?raw=true)
+
+A successful login should return a token such as above, e.g :
+
+```
+{
+  "token": "eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ3OTA1MDkyOCwiaWF0IjoxNDc5MDQ3MzI4fQ.eyJpZCI6NX0.I7XMV4jKhgczmSil9MwFpogyeDxlFvYc6ObFZTKsLZg"
+}
+```
+Copy only the token as it will be used during the next step.
+
+- **Create a bucketlist**
+
+This project utilizes **Token Based Authentication** to restrict access to certain resources. Absence
+of this token with the methods from here will result in a **401: Unauthorized Access** error.
+
+To create a bucketlist, make a **POST** request to the following URI:
+**http://12.0.0.1:5000/api/v1.0/bucketlists**.
+
+In the headers tab ensure the following:
+
+>Content-Type ----> application/json
+
+>Authorization ---> **Bearer** eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ3OTA1MDkyOCwiaWF0IjoxNDc5MDQ3MzI4fQ.eyJpZCI6NX0.I7XMV4jKhgczmSil9MwFpogyeDxlFvYc6ObFZTKsLZg
+
+Ensure the ***Bearer*** prefix comes before the token earlier copied.
+Give your Bucketlist a title and description and hit send, e.g:
+
+```
+{
+"title": "Demo bucket list title",
+"description":"This is a demo bucket list"
+}
+```
+
+A successful request should be as follows:
+
+![Demo Image](/docs/img/3.png?raw=true)
+
+To view it you can make a **GET** request to the URI for bucketlists plus the ID of the bucketlists appended:
+
+**http://12.0.0.1:5000/api/v1.0/bucketlists/1**.
+
+
+- **Update or Delete a bucketlist**
+
+To **UPDATE** a bucketlist, navigate to the full link as stated above i.e:
+
+**http://12.0.0.1:5000/api/v1.0/bucketlists/1** with the method for the URL as **PUT.**
+
+In the body tab, provide your information as follows:
+
+```
+{
+"description":"This is a demo update for my earlier bucket list"
+}
+```
+A successful update should be as follows:
+
+![Demo Image](/docs/img/4.png?raw=true)
+
+To **DELETE** a bucketlist, navigate to the full link as stated above i.e:
+
+**http://12.0.0.1:5000/api/v1.0/bucketlists/1** with the method for the URL as **DELETE**.
+
+A successful request should return a HTTP 204 status code as follows:
+
+![Demo Image](/docs/img/5.png?raw=true)
+
+- **Creating a bucket list item**
+
+To create a bucketlist item, make sure you have a bucketlist and navigate to the following url:
+
+**http://12.0.0.1:5000/api/v1.0/bucketlists/1/items** as a **POST** request.
+
+>1 here represents the ID of the bucketlist you want to add items to.
+
+Add your content:
+
+```
+{
+"title": "Demo bucket list item title",
+"description":"This is a demo bucket list item title"
+}
+```
+A successful POST reqeuest should return the following:
+
+![Demo Image](/docs/img/6.png?raw=true)
+
+Make a **GET** request to view the item at the following URI:
+
+**http://12.0.0.1:5000/api/v1.0/bucketlists/1/items/1**
+
+- **Updating or deleting a bucket list item**
+
+The format takes the same approach as the bucketlist update or delete with the only difference being the URI:
+
+**http://12.0.0.1:5000/api/v1.0/bucketlists/1/items/1**
+
+- **Paginantion and searching bucket lists**
+
+Blister also allows you to paginate bucketlists by adding the **limit** parameter to the URI as follows:
+
+**http://12.0.0.1:5000/api/v1.0/bucketlists?limit=1**
+
+![Demo Image](/docs/img/7.png?raw=true)
+
+Searching is also possible using the **q** parameter as follows:
+
+**http://12.0.0.1:5000/api/v1.0/bucketlists?q=bucket 1**
+
+![Demo Image](/docs/img/8.png?raw=true)
+
+
+# TESTS.
+
+Blister is configured using **Tox**. Thus use the command:
+
+```
+tox
+```
+will successfully run the tests.
+
+Alternatively, the following nosetests command should also suffice:
+
+```nosetests --with-coverage --cover-package=app```
+
+## Credits
+
+1. [Kimani Ndegwa](https://github.com/andela-kndegwa)
+
+2. [Abdulmalik Abdulwahab.](https://github.com/andela-aabdulwahab)
+
+3. [Chukwuerika Dike](https://github.com/andela-cdike)
+
+## License
+
+### The MIT License (MIT)
+
+Copyright (c) 2016 [Kimani Ndegwa](https://www.kimanindegwa.co.ke).
+
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+> of this software and associated documentation files (the "Software"), to deal
+> in the Software without restriction, including without limitation the rights
+> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+> copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in
+> all copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+> THE SOFTWARE.
