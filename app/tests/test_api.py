@@ -162,9 +162,7 @@ class TestEndpointsClass(TestCase):
     def test_get_when_there_are_no_bucketlists(self):
         url = base_url + '/bucketlists'
         response = self.blister.get(url, headers=self.headers)
-        self.assertEqual(response.status_code, 404)
-        self.assertIn('You have no bucketlists at the moment.',
-                      response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
 
     def test_create_bucketlist(self):
         url = base_url + '/bucketlists'
@@ -249,9 +247,7 @@ class TestEndpointsClass(TestCase):
                                      content_type='application/json')
         get_items_url = url + '/1/items'
         response = self.blister.get(get_items_url, headers=self.headers)
-        self.assertEqual(response.status_code, 404)
-        self.assertIn('This bucket list has no items at the moment.',
-                      response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
 
     def test_create_bucketlist_item(self):
         url = base_url + '/bucketlists'

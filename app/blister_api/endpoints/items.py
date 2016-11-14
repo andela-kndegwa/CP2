@@ -38,9 +38,6 @@ class BucketListItemCollection(Resource):
             return {'bucketlist_items': item}, 200
         if bucketlist_id:
             items = retrieve_all_bucketlists_items(bucketlist_id)
-            if not items:
-                abort(404,
-                      message='This bucket list has no items at the moment.')
             return {'bucketlist_items': items}, 200
 
     @marshal_with(bucketlistitem_serializer)
