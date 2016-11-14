@@ -1,10 +1,13 @@
 from flask import Flask, Blueprint
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+
 from config import config
+
 
 db = SQLAlchemy()  # Initialise the db
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1.0')
+
 
 # Initialise the Api class
 api = Api(api_bp)

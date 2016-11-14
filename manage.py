@@ -1,5 +1,6 @@
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager, Shell
+from flask import jsonify, make_response
 
 from app import create_app, db, api
 from app.blister_api.models import User
@@ -14,6 +15,13 @@ from app.blister_api.endpoints.login import LoginUser
 
 # create the app
 app = create_app('development')
+
+
+@app.errorhandler(404)
+def handle_error(error):
+    return make_response(jsonify({
+        'Error': 'Resource Not available, Please Confirm the URL'}), 404)
+
 
 # create instances of the Manager and Migrate classes.
 manager = Manager(app)
