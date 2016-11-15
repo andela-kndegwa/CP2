@@ -1,19 +1,18 @@
 from flask_restful import Resource, reqparse, marshal_with, abort
 
 from app.blister_api.authentication import multi_auth
-from app.blister_api.serializer import bucketlistitem_serializer
+from app.blister_api.serializer import (bucketlistitem_serializer,
+                                        bucketlist_item_collection_serializer)
 from app.blister_api.actions import (delete_bucket_list_item,
                                      update_bucket_list_item,
                                      retrieve_all_bucketlists_items,
                                      retrieve_particular_bucketlist_item,
                                      create_bucket_list_item)
 
-from app.blister_api.serializer import bucketlist_item_collection_serializer
-
 
 class BucketListItemCollection(Resource):
     """
-    This method retrieves all the bucket lists associcated
+    This method retrieves all the bucket lists associated
     with a particular user.
     """
     decorators = [multi_auth.login_required]
@@ -65,18 +64,6 @@ class SingleBucketListItem(Resource):
         self.item_parser.add_argument(
             'done', type=bool, location='json')
         super(SingleBucketListItem, self).__init__()
-
-    @marshal_with(bucketlist_item_collection_serializer)
-    def get(self, bucketlist_id=None, item_id=None):
-        if bucketlist_id and item_id:
-            item = retrieve_particular_bucketlist_item(bucketlist_id, item_id)
-            return {'bucketlist_items': item}, 200
-        if bucketlist_id:
-            items = retrieve_all_bucketlists_items(bucketlist_id)
-            if not items:
-                abort(404,
-                      message='This bucket list has not items at the moment.')
-            return {'bucketlist_items': items}, 200
 
     @marshal_with(bucketlistitem_serializer)
     def put(self, bucketlist_id=None, item_id=None):
