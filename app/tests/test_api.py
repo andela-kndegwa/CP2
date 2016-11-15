@@ -2,12 +2,10 @@ import json
 from flask_testing import TestCase
 
 from app import create_app, db, api
-from app.blister_api.endpoints.bucket_lists import BucketListCollection,\
-    SingleBucketList
-
-from app.blister_api.endpoints.items import BucketListItemCollection, \
-    SingleBucketListItem
-
+from app.blister_api.endpoints.bucket_lists import (BucketListCollection,
+                                                    SingleBucketList)
+from app.blister_api.endpoints.items import (BucketListItemCollection,
+                                             SingleBucketListItem)
 from app.blister_api.endpoints.login import LoginUser
 from app.blister_api.endpoints.register import RegisterUser, Home
 

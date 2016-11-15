@@ -14,6 +14,7 @@ class Config(object):
     DEFAULT_PER_PAGE = 20
     MAX_PER_PAGE = 100
     DEBUG = True
+    ERROR_404_HELP = False
 
 
 class DevelopmentConfig(Config):
