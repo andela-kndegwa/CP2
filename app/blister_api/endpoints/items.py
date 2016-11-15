@@ -1,11 +1,12 @@
 from flask_restful import Resource, reqparse, marshal_with, abort
 
 from app.blister_api.authentication import multi_auth
-from app.blister_api.serializer import bucketlist_serializer, \
-    bucketlistitem_serializer
-from app.blister_api.actions import delete_bucket_list_item, \
-    update_bucket_list_item, retrieve_all_bucketlists_items, \
-    retrieve_particular_bucketlist_item, create_bucket_list_item
+from app.blister_api.serializer import bucketlistitem_serializer
+from app.blister_api.actions import (delete_bucket_list_item,
+                                     update_bucket_list_item,
+                                     retrieve_all_bucketlists_items,
+                                     retrieve_particular_bucketlist_item,
+                                     create_bucket_list_item)
 
 from app.blister_api.serializer import bucketlist_item_collection_serializer
 
@@ -20,7 +21,7 @@ class BucketListItemCollection(Resource):
     def __init__(self):
         self.item_parser = reqparse.RequestParser()
         self.item_parser.add_argument('title', type=str,
-                                      help='Please provide a title for your bucketlist item.',
+                                      help='Please provide a title for your bucket list item.',
                                       location='json')
         self.item_parser.add_argument(
             'description', type=str, location='json')
@@ -54,7 +55,7 @@ class SingleBucketListItem(Resource):
     def __init__(self):
         self.item_parser = reqparse.RequestParser()
         self.item_parser.add_argument('title', type=str,
-                                      help='Please provide a title for your bucketlist item.',
+                                      help='Please provide a title for your bucket list item.',
                                       location='json')
         self.item_parser.add_argument(
             'description', type=str, location='json')

@@ -1,5 +1,5 @@
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
@@ -18,20 +18,20 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'blister-dev.sqlite')
+        'sqlite:///' + os.path.join(BASE_DIR, 'blister-dev.sqlite')
 
 
 class TestingConfig(Config):
     db_name = 'blister-test.sqlite'
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, db_name)
+        'sqlite:///' + os.path.join(BASE_DIR, db_name)
 
 
 class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'blister.sqlite')
+        'sqlite:///' + os.path.join(BASE_DIR, 'blister.sqlite')
 
 
 config = {
