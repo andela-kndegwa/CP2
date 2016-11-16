@@ -94,7 +94,7 @@ DELETE |```/bucketlists/<id>/items/<item_id>```| Delete item in bucket list
 
 ```python manage.py runserver```
 
-The server should be running on [http://12.0.0.1:5000] 
+The server should be running on [http://127.0.0.1:5000] 
 
 # USAGE.
 
@@ -105,7 +105,7 @@ Once your up and running with postman, the following steps should get your acqua
 - **Register a user.**
 
 Copy the localhost link plus the **api/v1.0/auth/register** appended to the tail end of the link. i.e:
-**http://12.0.0.1:5000/api/v1.0/auth/register**
+**http://127.0.0.1:5000/api/v1.0/auth/register**
 
 - Ensure the dropdown to the left of the URL bar is a POST request
 
@@ -124,7 +124,7 @@ A successful registeration should return the message:
 - **Login a user.**
 
 This time the link changes to:
-**http://12.0.0.1:5000/api/v1.0/auth/login**
+**http://127.0.0.1:5000/api/v1.0/auth/login**
 
 - Ensure that the method is a POST request also and log in with the same credentials used to sign up.
 
@@ -147,7 +147,7 @@ This project utilizes **Token Based Authentication** to restrict access to certa
 of this token with the methods from here will result in a **401: Unauthorized Access** error.
 
 To create a bucketlist, make a **POST** request to the following URI:
-**http://12.0.0.1:5000/api/v1.0/bucketlists**.
+**http://127.0.0.1:5000/api/v1.0/bucketlists**.
 
 In the headers tab ensure the following:
 
@@ -171,14 +171,14 @@ A successful request should be as follows:
 
 To view it you can make a **GET** request to the URI for bucketlists plus the ID of the bucketlists appended:
 
-**http://12.0.0.1:5000/api/v1.0/bucketlists/1**.
+**http://127.0.0.1:5000/api/v1.0/bucketlists/1**.
 
 
 - **Update or Delete a bucketlist**
 
 To **UPDATE** a bucketlist, navigate to the full link as stated above i.e:
 
-**http://12.0.0.1:5000/api/v1.0/bucketlists/1** with the method for the URL as **PUT.**
+**http://127.0.0.1:5000/api/v1.0/bucketlists/1** with the method for the URL as **PUT.**
 
 In the body tab, provide your information as follows:
 
@@ -193,7 +193,7 @@ A successful update should be as follows:
 
 To **DELETE** a bucketlist, navigate to the full link as stated above i.e:
 
-**http://12.0.0.1:5000/api/v1.0/bucketlists/1** with the method for the URL as **DELETE**.
+**http://127.0.0.1:5000/api/v1.0/bucketlists/1** with the method for the URL as **DELETE**.
 
 A successful request should return a HTTP 204 status code as follows:
 
@@ -203,7 +203,7 @@ A successful request should return a HTTP 204 status code as follows:
 
 To create a bucketlist item, make sure you have a bucketlist and navigate to the following url:
 
-**http://12.0.0.1:5000/api/v1.0/bucketlists/1/items** as a **POST** request.
+**http://127.0.0.1:5000/api/v1.0/bucketlists/1/items** as a **POST** request.
 
 >1 here represents the ID of the bucketlist you want to add items to.
 
@@ -221,25 +221,25 @@ A successful POST reqeuest should return the following:
 
 Make a **GET** request to view the item at the following URI:
 
-**http://12.0.0.1:5000/api/v1.0/bucketlists/1/items/1**
+**http://127.0.0.1:5000/api/v1.0/bucketlists/1/items/1**
 
 - **Updating or deleting a bucket list item**
 
 The format takes the same approach as the bucketlist update or delete with the only difference being the URI:
 
-**http://12.0.0.1:5000/api/v1.0/bucketlists/1/items/1**
+**http://127.0.0.1:5000/api/v1.0/bucketlists/1/items/1**
 
 - **Paginantion and searching bucket lists**
 
 Blister also allows you to paginate bucketlists by adding the **limit** parameter to the URI as follows:
 
-**http://12.0.0.1:5000/api/v1.0/bucketlists?limit=1**
+**http://127.0.0.1:5000/api/v1.0/bucketlists?limit=1**
 
 ![Demo Image](/docs/img/7.png?raw=true)
 
 Searching is also possible using the **q** parameter as follows:
 
-**http://12.0.0.1:5000/api/v1.0/bucketlists?q=bucket 1**
+**http://127.0.0.1:5000/api/v1.0/bucketlists?q=bucket 1**
 
 ![Demo Image](/docs/img/8.png?raw=true)
 
@@ -257,34 +257,9 @@ Alternatively, the following nosetests command should also suffice:
 
 ```nosetests --with-coverage --cover-package=app```
 
-## Credits
 
-1. [Kimani Ndegwa](https://github.com/andela-kndegwa)
+### Contributors.
 
-2. [Abdulmalik Abdulwahab.](https://github.com/andela-aabdulwahab)
+1. [Abdulmalik Abdulwahab.](https://github.com/andela-aabdulwahab)
 
-3. [Chukwuerika Dike](https://github.com/andela-cdike)
-
-## License
-
-### The MIT License (MIT)
-
-Copyright (c) 2016 [Kimani Ndegwa](https://www.kimanindegwa.co.ke).
-
-> Permission is hereby granted, free of charge, to any person obtaining a copy
-> of this software and associated documentation files (the "Software"), to deal
-> in the Software without restriction, including without limitation the rights
-> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-> copies of the Software, and to permit persons to whom the Software is
-> furnished to do so, subject to the following conditions:
->
-> The above copyright notice and this permission notice shall be included in
-> all copies or substantial portions of the Software.
->
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-> THE SOFTWARE.
+2. [Chukwuerika Dike](https://github.com/andela-cdike)

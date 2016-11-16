@@ -29,8 +29,6 @@ def paginate(f):
             BucketList.user_id == g.user.id)
         page_bucketlist = page_bucketlist.paginate(page=page, per_page=limit)
         bucketlists = page_bucketlist.items
-        if not bucketlists:
-            abort(404, message='You have no bucketlists at the moment.')
         pagination = {
             'page': page_bucketlist.page,
             'number_of_pages': page_bucketlist.pages,

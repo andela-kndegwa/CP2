@@ -2,12 +2,10 @@ import json
 from flask_testing import TestCase
 
 from app import create_app, db, api
-from app.blister_api.endpoints.bucket_lists import BucketListCollection,\
-    SingleBucketList
-
-from app.blister_api.endpoints.items import BucketListItemCollection, \
-    SingleBucketListItem
-
+from app.blister_api.endpoints.bucket_lists import (BucketListCollection,
+                                                    SingleBucketList)
+from app.blister_api.endpoints.items import (BucketListItemCollection,
+                                             SingleBucketListItem)
 from app.blister_api.endpoints.login import LoginUser
 from app.blister_api.endpoints.register import RegisterUser, Home
 
@@ -100,7 +98,7 @@ class TestEndpointsClass(TestCase):
     def test_register_user_works(self):
         '''
         Arguments:
-        Self---> itsa class method
+        Self---> is a class method
 
         Returns:
         201 As it is a post request.
@@ -162,9 +160,7 @@ class TestEndpointsClass(TestCase):
     def test_get_when_there_are_no_bucketlists(self):
         url = base_url + '/bucketlists'
         response = self.blister.get(url, headers=self.headers)
-        self.assertEqual(response.status_code, 404)
-        self.assertIn('You have no bucketlists at the moment.',
-                      response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
 
     def test_create_bucketlist(self):
         url = base_url + '/bucketlists'
@@ -249,9 +245,7 @@ class TestEndpointsClass(TestCase):
                                      content_type='application/json')
         get_items_url = url + '/1/items'
         response = self.blister.get(get_items_url, headers=self.headers)
-        self.assertEqual(response.status_code, 404)
-        self.assertIn('This bucket list has no items at the moment.',
-                      response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
 
     def test_create_bucketlist_item(self):
         url = base_url + '/bucketlists'

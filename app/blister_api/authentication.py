@@ -13,7 +13,7 @@ multi_auth = MultiAuth(basic_auth, token_auth)
 def verify_password(username, password):
     user = User.query.filter_by(username=username).first()
     if user:
-        if User().verify_password(password):
+        if User.verify_password(password):
             g.user = username
             return True
         return False

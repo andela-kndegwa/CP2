@@ -1,7 +1,8 @@
-from app.blister_api.models import User, BucketListItem, BucketList
-import unittest  # Python unittesting framework
-from app import create_app, db
 import time
+import unittest
+
+from app import create_app, db
+from app.blister_api.models import User, BucketList, BucketListItem
 
 
 class TestUserModelFunctionality(unittest.TestCase):
@@ -60,7 +61,8 @@ class TestUserModelFunctionality(unittest.TestCase):
         Error Message ---> Incorrect password
         """
         res = User.query_user('mrkimani', 'password')
-        self.assertEquals(res, 'Authentication failed. Invalid login credentials.')
+        self.assertEquals(
+            res, 'Authentication failed. Invalid login credentials.')
 
     def test_verification_token_expiry(self):
         """
@@ -71,7 +73,8 @@ class TestUserModelFunctionality(unittest.TestCase):
         """
         app_token = self.user.generate_authentication_token(expires_in=0.3)
         time.sleep(1)
-        self.assertEquals(self.user.verify_auth_token(app_token), 'Valid BUT expired token returned.')
+        self.assertEquals(self.user.verify_auth_token(
+            app_token), 'Valid BUT expired token returned.')
 
     def test_query_user_from_test_database_if_user_non_existent(self):
         """
@@ -107,7 +110,8 @@ class TestUserModelFunctionality(unittest.TestCase):
         rejected.
         """
         fake_key = 'ANY_THING_APART_FROM_THE_SECRET_KEY'
-        self.assertEquals(User.verify_auth_token(fake_key), 'Bad Signature on token.')
+        self.assertEquals(User.verify_auth_token(
+            fake_key), 'Bad Signature on token.')
 
     def tearDown(self):
         db.drop_all()
@@ -176,7 +180,7 @@ class TestBucketListItemModelFunctionality(unittest.TestCase):
         title = "Ohio 2017"
         description = "Jump jump"
         self.item = BucketListItem(
-            title=title, description=description, bucketlist_id=1)
+            title=title, description=description)
         db.session.add(self.item)
         db.session.commit()
 

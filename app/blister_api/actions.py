@@ -91,10 +91,9 @@ def create_bucketlist(data):
     """
     if not data:
         abort(400, message='Please add information for your bucketlist.')
-    if not data.get('title'):
-        abort(400, message='Please provide a title for your bucketlist')
-
     title = data.get('title')
+    if not title:
+        abort(400, message='Please provide a title for your bucketlist')
     description = data.get('description')
     user_id = g.user.id
 
@@ -129,9 +128,9 @@ def create_bucket_list_item(data, bucketlist_id):
         abort(400, message='Please create a bucketlist before adding an item.')
     if not data:
         abort(400, message='Please add information for your bucketlist item.')
-    if not data.get('title'):
-        abort(400, message='Please provide a title for your bucketlist item')
     title = data.get('title')
+    if not title:
+        abort(400, message='Please provide a title for your bucketlist item')
     description = data.get('description')
     bucketlist = BucketList.query.filter_by(id=bucketlist_id).first()
     item_title_exists = BucketListItem.query.filter_by(title=title).first()

@@ -3,12 +3,13 @@ from flask_restful import Resource, reqparse, marshal_with, abort
 
 
 from app.blister_api.authentication import multi_auth
-from app.blister_api.serializer import bucketlist_serializer, \
-    bucketlist_collection_serializer
-from app.blister_api.actions import search_bucket_list, \
-    update_bucketlist, delete_bucket_list, create_bucketlist, \
-    retrieve_all_bucketlists, \
-    retrieve_particular_bucketlist
+from app.blister_api.serializer import (bucketlist_serializer,
+                                        bucketlist_collection_serializer)
+from app.blister_api.actions import (update_bucketlist,
+                                     delete_bucket_list,
+                                     create_bucketlist,
+                                     retrieve_all_bucketlists,
+                                     retrieve_particular_bucketlist)
 from app.blister_api.utils import paginate
 
 
@@ -47,15 +48,6 @@ class BucketListCollection(Resource):
     @paginate
     def get(self):
         bucketlists = retrieve_all_bucketlists()
-        if not bucketlists:
-            abort(404, message='You have no bucketlists at the moment.')
-        q = request.args.get('q')
-        if q:
-            bucketlists = search_bucket_list(q)
-            if not bucketlists:
-                abort(404, message='That bucketlist does not exist.')
-            else:
-                return bucketlists, 200
         return bucketlists, 200
 
 
