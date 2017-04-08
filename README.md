@@ -78,7 +78,7 @@ DELETE |```/bucketlists/<id>/items/<item_id>```| Delete item in bucket list
 
 1. First clone this repository to your local machine using git clone ```https://github.com/andela-kndegwa/CP2.git```
 
-2. Checkout into the **feature-review** branch using ```git checkout develop```
+2. Checkout into the **feature-review** branch using ```git checkout feature-review```
 
 3. Create a ***virtual environment*** on your machine using  and install the dependencies via ```pip install -r requirements.txt``` after activating the virtual environment.
 
